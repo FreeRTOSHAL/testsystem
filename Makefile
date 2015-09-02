@@ -1,5 +1,6 @@
 PROJECT_NAME    := test
-objs-y		:= src arch mach board driver freertos 
+objs-y		:= src arch mach driver
+libs-y          := freertos
 #libs-y          := libs
 KBUILD_CLFLAGS := -Wall
 

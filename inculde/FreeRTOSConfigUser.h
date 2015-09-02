@@ -1,0 +1,6 @@
+#ifndef FREERTOSCONFIGUSER_H_
+#define FREERTOSCONFIGUSER_H_
+#ifdef CONFIG_ASSERT_USER_DEFINED
+# define ASSERT_USER(x) 
+#endif
+#endif

@@ -3,7 +3,6 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <gpio.h>
-#include <led.h>
 #include "iomux.h"
 
 void _exit() {
@@ -23,7 +22,6 @@ void vApplicationStackOverflowHook() {
 }
 
 void testTask(void *data) {
-#if 0
 	struct mux *mux = mux_init();
 	struct gpio *gpio = gpio_init(1, mux);
 	struct gpio_pin *pin = gpio_getPin(gpio, PTB17, GPIO_OUTPUT);
@@ -32,15 +30,7 @@ void testTask(void *data) {
 		gpio_togglePin(pin);
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
-#else
-	struct led *led = led_init(0);
-	TickType_t lastWakeUpTime;
-	for(;;) {
-		led_toggle(led);
-		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
-	}
 
-#endif
 }
 
 void testTask2(void *data) {
