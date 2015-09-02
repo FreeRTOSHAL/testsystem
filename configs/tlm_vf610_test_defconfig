@@ -1,0 +1,150 @@
+#
+# Automatically generated make config: don't edit
+# FreeRTOS Configuration
+#
+
+#
+# Architecture Settings
+#
+CONFIG_ARCH_ARM=y
+
+#
+# Global Settings
+#
+
+#
+# Waring CPU Clock Hz not set!
+#
+CONFIG_CPU_CLOCK_HZ=0
+
+#
+# Architecture Settings
+#
+# CONFIG_ARCH_ARM_CORTEX_M0 is not set
+# CONFIG_ARCH_ARM_CORTEX_M3 is not set
+CONFIG_ARCH_ARM_CORTEX_M4=y
+CONFIG_ARCH_INCLUDE="-Iarch/arm/cortex-m4 -Iarch/arm/include"
+CONFIG_ARCH_CFLAGS="-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard"
+CONFIG_ARCH_LDFLAGS=""
+CONFIG_PORT_HAS_OPTIMISED_TASK_SELECTION=y
+
+#
+# Cortex-M4 Settings
+#
+CONFIG_ARCH_AFLAGS="-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard"
+
+#
+# Mach Settings
+#
+CONFIG_MACH_VF610=y
+
+#
+# VF610 Settings
+#
+CONFIG_MAX_SYSCALL_INTERRUPT_PRIORITY=0x280
+CONFIG_KERNEL_INTERRUPT_PRIORITY=0xf80
+CONFIG_BOARD_LD_SCRIPT="mach/vf610/vf610.ld"
+CONFIG_VF610_UART=y
+CONFIG_MACH_HAS_UART=y
+CONFIG_MACH_HAS_GPIO=y
+
+#
+# Board Settings
+#
+CONFIG_BOARD_TLM_VF610=y
+
+#
+# VF610-TLM Settings
+#
+CONFIG_BOARD_HAS_LED=y
+
+#
+# Driver
+#
+CONFIG_GPIO=y
+CONFIG_LED=y
+CONFIG_UART=y
+CONFIG_UART_GENERIC_STRING=y
+
+#
+# FreeRTOS
+#
+
+#
+# Basic Settings
+#
+CONFIG_HEAP_1=y
+# CONFIG_HEAP_2 is not set
+# CONFIG_HEAP_3 is not set
+# CONFIG_HEAP_4 is not set
+# CONFIG_HEAP_5 is not set
+CONFIG_TOTAL_HEAP_SIZE=131072
+# CONFIG_INCLUDE_USER_FREERTOS_CONFIG is not set
+CONFIG_ASSERT_DEFAULT=y
+# CONFIG_ASSERT_USER_DEFINED is not set
+# CONFIG_ASSERT_DISABLED is not set
+# CONFIG_USE_16_BIT_TICKS is not set
+
+#
+# Warning the most architecture do not support tick rate garter then 1000Hz
+#
+
+#
+# Warning tick rate grater then 1000Hz can make the system unstable
+#
+CONFIG_TICK_RATE_HZ=1000
+# CONFIG_USE_TRACE_FACILITY is not set
+# CONFIG_USE_ALTERNATIVE_API is not set
+
+#
+# Task Setting
+#
+CONFIG_MAX_PRIORITIES=5
+CONFIG_MINIMAL_STACK_SIZE=128
+CONFIG_MAX_TASK_NAME_LEN=16
+CONFIG_NUM_THREAD_LOCAL_STORAGE_POINTERS=0
+# CONFIG_USE_STATS_FORMATTING_FUNCTIONS is not set
+# CONFIG_USE_TICKLESS_IDLE is not set
+CONFIG_INCLUDE_vTaskSuspend=y
+CONFIG_INCLUDE_xTaskResumeFromISR=y
+CONFIG_USE_PREEMPTION=y
+CONFIG_USE_TIME_SLICING=y
+CONFIG_IDLE_SHOULD_YIELD=y
+# CONFIG_USE_APPLICATION_TASK_TAG is not set
+# CONFIG_USE_NEWLIB_REENTRANT is not set
+# CONFIG_USE_TASK_NOTIFICATIONS is not set
+CONFIG_USE_PORT_OPTIMISED_TASK_SELECTION=y
+CONFIG_CHECK_STACK_OVERFLOW=y
+CONFIG_CHECK_FOR_STACK_OVERFLOW=1
+# CONFIG_USE_TICK_HOOK is not set
+
+#
+# Function Support
+#
+# CONFIG_INCLUDE_xTaskGetIdleTaskHandle is not set
+CONFIG_INCLUDE_vTaskDelay=y
+CONFIG_INCLUDE_vTaskDelayUntil=y
+# CONFIG_INCLUDE_eTaskGetState is not set
+# CONFIG_INCLUDE_uxTaskPriorityGet is not set
+# CONFIG_INCLUDE_vTaskPrioritySet is not set
+# CONFIG_INCLUDE_pcTaskGetTaskName is not set
+# CONFIG_INCLUDE_xTaskGetSchedulerState is not set
+
+#
+# Queue Settings
+#
+# CONFIG_USE_QUEUE_SETS is not set
+CONFIG_QUEUE_REGISTRY_SIZE=0
+# CONFIG_USE_MUTEXES is not set
+# CONFIG_USE_COUNTING_SEMAPHORES is not set
+# CONFIG_USE_TIMERS is not set
+# CONFIG_USE_CO_ROUTINES is not set
+
+#
+# Compiler Settings
+#
+CONFIG_CROSS_COMPILE="arm-none-eabi-"
+CONFIG_EXTRA_AFLAGS=""
+CONFIG_EXTRA_CFLAGS=""
+CONFIG_EXTRA_CPPFLAGS=""
+CONFIG_EXTRA_LDFLAGS=""

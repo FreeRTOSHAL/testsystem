@@ -1,0 +1,21 @@
+[submodule "freertos"]
+	path = freertos
+	url = git@scuderia.cs.hs-rm.de:dffrtos/dffrtos-kernel.git
+[submodule "include"]
+	path = include
+	url = git@scuderia.cs.hs-rm.de:dffrtos/dffrtos-include.git
+[submodule "scripts"]
+	path = scripts
+	url = git@scuderia.cs.hs-rm.de:dffrtos/dffrtos-buildsystem.git
+[submodule "driver"]
+	path = driver
+	url = git@scuderia.cs.hs-rm.de:dffrtos/dffrtos-driver.git
+[submodule "mach"]
+	path = mach
+	url = git@scuderia.cs.hs-rm.de:dffrtos/dffrtos-mach.git
+[submodule "board"]
+	path = board
+	url = git@scuderia.cs.hs-rm.de:dffrtos/dffrtos-board.git
+[submodule "arch"]
+	path = arch
+	url = git@scuderia.cs.hs-rm.de:dffrtos/dffrtos-arch.git
