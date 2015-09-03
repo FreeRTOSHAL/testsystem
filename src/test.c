@@ -15,7 +15,11 @@ caddr_t _sbrk(int incr) {
 }
 
 void vApplicationTickHook() {
-
+#ifndef CONFIG_UART_THREAD_SAVE
+	static struct uart *uart;
+	uart = uart_init(1, 115200);
+	CONFIG_ASSERT(uart_puts(uart, "s\n", portMAX_DELAY) == 0);
+#endif
 }
 
 void vApplicationStackOverflowHook() {
@@ -23,12 +27,14 @@ void vApplicationStackOverflowHook() {
 }
 
 void testTask(void *data) {
+	float t = 0;
 	struct mux *mux = mux_init();
 	struct gpio *gpio = gpio_init(1, mux);
 	struct gpio_pin *pin = gpio_getPin(gpio, PTB17, GPIO_OUTPUT);
 	struct uart *uart = uart_init(1, 115200);
 	TickType_t lastWakeUpTime;
 	for(;;) {
+		t++;
 		gpio_togglePin(pin);
 		CONFIG_ASSERT(uart_puts(uart, "=======\ntest\n=======\n", portMAX_DELAY) == 0);
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
@@ -37,12 +43,14 @@ void testTask(void *data) {
 }
 
 void testTask2(void *data) {
+	float t = 0;
 	struct mux *mux = mux_init();
 	struct gpio *gpio = gpio_init(1, mux);
 	struct gpio_pin *pin = gpio_getPin(gpio, PTB17, GPIO_OUTPUT);
 	TickType_t lastWakeUpTime;
 	struct uart *uart = uart_init(1, 115200);
 	for(;;) {
+		t++;
 		gpio_togglePin(pin);
 		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
 		gpio_togglePin(pin);
@@ -62,7 +70,7 @@ void testTask3(void *data) {
 void main() {
 	xTaskCreate( testTask, "Test Task", 128, NULL, 1, NULL);
 	xTaskCreate( testTask2, "Test 2 Task", 128, NULL, 1, NULL);
-	xTaskCreate( testTask3, "Test 3 Task", 128, NULL, 1, NULL);
+	/*xTaskCreate( testTask3, "Test 3 Task", 128, NULL, 1, NULL);*/
 	vTaskStartScheduler ();
 	for(;;);
 }
