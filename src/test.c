@@ -91,6 +91,7 @@ void vApplicationIdleHook( void ) {
 void testTask(void *data) {
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
+		/*printf("Test\n");*/
 #ifndef CONFIG_ASSERT_DISABLED
 		CONFIG_ASSERT(gpio_togglePin(pinPTB2) == 0);
 #else
