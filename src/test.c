@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <FreeRTOS.h>
 #include <task.h>
 #include <gpio.h>
 #include <iomux.h>
 #include <uart.h>
 #include <newlib_stub.h>
+#include <buffertest.h>
 
 struct gpio *gpioA = NULL;
 struct gpio *gpioB = NULL;
@@ -64,15 +66,17 @@ void vApplicationMallocFailedHook( void ) {
 }
 
 void vApplicationTickHook() {
-#ifndef CONFIG_UART_THREAD_SAVE
+/*#ifndef CONFIG_UART_THREAD_SAVE
 	static struct uart *uart;
 	uart = uart_init(1, 115200);
 	CONFIG_ASSERT(uart_puts(uart, "s\n", portMAX_DELAY) == 0);
-#endif
+#endif*/
+#if 0
 #ifndef CONFIG_ASSERT_DISABLED
 	CONFIG_ASSERT(gpio_togglePin(pinPTB0) == 0);
 #else
 	gpio_togglePin(pinPTB0);
+#endif
 #endif
 }
 
@@ -81,11 +85,13 @@ void vApplicationStackOverflowHook() {
 }
 
 void vApplicationIdleHook( void ) {
+/*
 #ifndef CONFIG_ASSERT_DISABLED
 	CONFIG_ASSERT(gpio_togglePin(pinPTA19) == 0);
 #else
 	gpio_togglePin(pinPTA19);
 #endif
+*/
 }
 
 void testTask(void *data) {
@@ -129,9 +135,12 @@ int main() {
 #endif
 	ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
-	xTaskCreate( testTask, "Test Task", 512, NULL, 1, NULL);
-	xTaskCreate( testTask2, "Test 2 Task", 512, NULL, 1, NULL);
+	/*xTaskCreate( testTask, "Test Task", 512, NULL, 1, NULL);
+	xTaskCreate( testTask2, "Test 2 Task", 512, NULL, 1, NULL);*/
 	/*xTaskCreate( testTask3, "Test 3 Task", 128, NULL, 1, NULL);*/
+#ifdef CONFIG_BUFFER
+	bufferInit();
+#endif
 	vTaskStartScheduler ();
 	for(;;);
 	return 0;
