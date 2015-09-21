@@ -8,6 +8,8 @@
 #include <uart.h>
 #include <newlib_stub.h>
 #include <buffertest.h>
+#include <irq.h>
+#include <vfxxx_irqtest.h>
 
 struct gpio *gpioA = NULL;
 struct gpio *gpioB = NULL;
@@ -97,13 +99,13 @@ void vApplicationIdleHook( void ) {
 void testTask(void *data) {
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
-		/*printf("Test\n");*/
+		printf("Test\n");
 #ifndef CONFIG_ASSERT_DISABLED
 		CONFIG_ASSERT(gpio_togglePin(pinPTB2) == 0);
 #else
 		gpio_togglePin(pinPTB2);
 #endif
-		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
+		vTaskDelayUntil(&lastWakeUpTime, 1 / portTICK_PERIOD_MS);
 	}
 
 }
@@ -128,18 +130,24 @@ void testTask3(void *data) {
 
 int main() {
 	int32_t ret;
-	struct uart *uart = uart_init(1, 115200);
+	ret = irq_init();
+	CONFIG_ASSERT(ret == 0);
+	
+	struct uart *uart = uart_init(6, 115200);
 #ifdef CONFIG_NEWLIB
 	ret = newlib_init(uart, uart);
 	CONFIG_ASSERT(ret == 0);
 #endif
 	ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
-	/*xTaskCreate( testTask, "Test Task", 512, NULL, 1, NULL);
-	xTaskCreate( testTask2, "Test 2 Task", 512, NULL, 1, NULL);*/
+	xTaskCreate( testTask, "Test Task", 512, NULL, 1, NULL);
+	xTaskCreate( testTask2, "Test 2 Task", 512, NULL, 1, NULL);
 	/*xTaskCreate( testTask3, "Test 3 Task", 128, NULL, 1, NULL);*/
-#ifdef CONFIG_BUFFER
+#ifdef CONFIG_BUFFERTEST
 	bufferInit();
+#endif
+#ifdef CONFIG_IRQTEST
+	irqtest_init();
 #endif
 	vTaskStartScheduler ();
 	for(;;);

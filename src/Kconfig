@@ -1,0 +1,28 @@
+menu "Application Config"
+config BUFFERTEST
+	bool "Buffer Test"
+	help
+		internal Activate Buffer Test
+config BUFFERTEST_SELF
+	bool "Buffer Selftest"
+	depends on BUFFERTEST
+	help
+		Buffer Selftest
+config BUFFERTEST_IRQ
+	bool "BUffer IRQ Test"
+	depends on BUFFERTEST
+	depends on MACH_VF610
+	help
+		Buffer IRQ Test
+config TTY_BUFFERTEST
+	bool "TTY Buffertest"
+	depends on BUFFERTEST
+	depends on MACH_VF610
+	help
+		Buffertest
+config IRQTEST
+	bool "IRQ Test"
+	depends on MACH_VF610
+	help
+		IRQ Test
+endmenu
