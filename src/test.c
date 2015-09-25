@@ -10,6 +10,10 @@
 #include <buffertest.h>
 #include <irq.h>
 #include <vfxxx_irqtest.h>
+#include <flextimer_test.h>
+#include <ppm.h>
+#include <pwmtest.h>
+#include <rctest.h>
 
 struct gpio *gpioA = NULL;
 struct gpio *gpioB = NULL;
@@ -44,6 +48,7 @@ int32_t initGPIO() {
 	if (gpioE == NULL) {
 		return -1;
 	}
+#ifndef CONFIG_PWM_TEST
 	pinPTB0 = gpio_getPin(gpioA, PTB0, GPIO_OUTPUT);
 	if (pinPTB0 == NULL) {
 		return -1;
@@ -52,6 +57,7 @@ int32_t initGPIO() {
 	if (pinPTB2 == NULL) {
 		return -1;
 	}
+#endif
 	pinPTA18 = gpio_getPin(gpioA, PTA18, GPIO_OUTPUT);
 	if (pinPTA18 == NULL) {
 		return -1;
@@ -73,7 +79,7 @@ void vApplicationTickHook() {
 	uart = uart_init(1, 115200);
 	CONFIG_ASSERT(uart_puts(uart, "s\n", portMAX_DELAY) == 0);
 #endif*/
-#if 0
+#ifndef CONFIG_PWM_TEST
 #ifndef CONFIG_ASSERT_DISABLED
 	CONFIG_ASSERT(gpio_togglePin(pinPTB0) == 0);
 #else
@@ -99,13 +105,16 @@ void vApplicationIdleHook( void ) {
 void testTask(void *data) {
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
-		printf("Test\n");
+		//printf("Test\n");
+
+#ifndef CONFIG_PWM_TEST
 #ifndef CONFIG_ASSERT_DISABLED
 		CONFIG_ASSERT(gpio_togglePin(pinPTB2) == 0);
 #else
 		gpio_togglePin(pinPTB2);
 #endif
-		vTaskDelayUntil(&lastWakeUpTime, 1 / portTICK_PERIOD_MS);
+#endif
+		vTaskDelayUntil(&lastWakeUpTime, 1);
 	}
 
 }
@@ -118,7 +127,7 @@ void testTask2(void *data) {
 #else
 		gpio_togglePin(pinPTA18);
 #endif
-		vTaskDelayUntil(&lastWakeUpTime, 5000 / portTICK_PERIOD_MS);
+		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
 
@@ -148,6 +157,21 @@ int main() {
 #endif
 #ifdef CONFIG_IRQTEST
 	irqtest_init();
+#endif
+#ifdef CONFIG_VFXXX_FLEXTIMER_TEST
+	ftmInit(pinPTA19);
+#endif
+#ifdef CONFIG_PPM
+	{
+		struct ppm *ppm = ppm_init(10, pinPTA19);
+		ppm_start(ppm);
+	}
+#endif
+#ifdef CONFIG_PWM_TEST
+	pwmtest_init();
+#endif
+#ifdef CONFIG_RCTEST
+	rcInit();
 #endif
 	vTaskStartScheduler ();
 	for(;;);
