@@ -50,4 +50,9 @@ config RCTEST
 	depends on RC
 	help
 		RC Driver Test
+config SPITEST
+	bool "SPI Test"
+	depends on SPI
+	help
+		SPI Test
 endmenu

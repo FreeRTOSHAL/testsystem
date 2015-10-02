@@ -6,3 +6,4 @@ obj-$(CONFIG_PPM) += ppm.o
 obj-$(CONFIG_PWM_TEST) += pwmtest.o
 obj-$(CONFIG_RC) += remote_control.o
 obj-$(CONFIG_RCTEST) += rctest.o
+obj-$(CONFIG_SPITEST) += spitest.o

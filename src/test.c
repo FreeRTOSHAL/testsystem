@@ -14,56 +14,43 @@
 #include <ppm.h>
 #include <pwmtest.h>
 #include <rctest.h>
+#include <flextimer.h>
+#include <spitest.h>
 
-struct gpio *gpioA = NULL;
-struct gpio *gpioB = NULL;
-struct gpio *gpioC = NULL;
-struct gpio *gpioD = NULL;
-struct gpio *gpioE = NULL;
+static struct gpio *gpio = NULL;
 
-struct gpio_pin *pinPTB0 = NULL;
-struct gpio_pin *pinPTB2 = NULL;
-struct gpio_pin *pinPTA18 = NULL;
-struct gpio_pin *pinPTA19 = NULL;
+static struct gpio_pin *pinPTB0 = NULL;
+static struct gpio_pin *pinPTB2 = NULL;
+static struct gpio_pin *pinPTA18 = NULL;
+static struct gpio_pin *pinPTA19 = NULL;
+
+static struct gpio_pin *pinPTB17 = NULL;
 
 int32_t initGPIO() {
-	struct mux *mux = mux_init();
-	gpioA = gpio_init(0, mux);
-	if (gpioA == NULL) {
-		return -1;
-	}
-	gpioB = gpio_init(1, mux);
-	if (gpioB == NULL) {
-		return -1;
-	}
-	gpioC = gpio_init(2, mux);
-	if (gpioC == NULL) {
-		return -1;
-	}
-	gpioD = gpio_init(3, mux);
-	if (gpioD == NULL) {
-		return -1;
-	}
-	gpioE = gpio_init(4, mux);
-	if (gpioE == NULL) {
+	gpio = gpio_init();
+	if (gpio == NULL) {
 		return -1;
 	}
 #ifndef CONFIG_PWM_TEST
-	pinPTB0 = gpio_getPin(gpioA, PTB0, GPIO_OUTPUT);
+	pinPTB0 = gpio_getPin(gpio, PTB0, GPIO_OUTPUT);
 	if (pinPTB0 == NULL) {
 		return -1;
 	}
-	pinPTB2 = gpio_getPin(gpioA, PTB2, GPIO_OUTPUT);
+	pinPTB2 = gpio_getPin(gpio, PTB2, GPIO_OUTPUT);
 	if (pinPTB2 == NULL) {
 		return -1;
 	}
 #endif
-	pinPTA18 = gpio_getPin(gpioA, PTA18, GPIO_OUTPUT);
+	pinPTA18 = gpio_getPin(gpio, PTA18, GPIO_OUTPUT);
 	if (pinPTA18 == NULL) {
 		return -1;
 	}
-	pinPTA19 = gpio_getPin(gpioA, PTA19, GPIO_OUTPUT);
+	pinPTA19 = gpio_getPin(gpio, PTA19, GPIO_OUTPUT);
 	if (pinPTA19 == NULL) {
+		return -1;
+	}
+	pinPTB17 = gpio_getPin(gpio, PTB17, GPIO_OUTPUT);
+	if (pinPTB17 == NULL) {
 		return -1;
 	}
 	return 0;
@@ -137,8 +124,60 @@ void testTask3(void *data) {
 	}
 }
 
+void ledTask(void *data) {
+	int32_t ret;
+	bool up = true;
+	uint64_t n = 10000;
+	struct ftm *ftm = data;
+	TickType_t waittime = 20;
+	TickType_t lastWakeUpTime = xTaskGetTickCount();
+	for(;;) {
+		if (up) {
+			if (n >= (20000 - 400)) {
+				up = false;
+			}
+			n+=400;
+		} else {
+			if (n <= 400) {
+				up = true;
+			}
+			n-=400;
+		}
+		ret = ftm_setPWMDutyCycle(ftm, 1, n);
+		CONFIG_ASSERT(ret == 0);
+		if (n == 0 || n == 20000) {
+			waittime = 1000;
+			gpio_togglePin(pinPTB17);
+		} else {
+			waittime = 20;
+		}
+		vTaskDelayUntil(&lastWakeUpTime, waittime / portTICK_PERIOD_MS);
+	}
+}
+
+#if CONFIG_USE_STATS_FORMATTING_FUNCTIONS > 0
+void taskManTask(void *data) {
+	TickType_t lastWakeUpTime = xTaskGetTickCount();
+	static char taskBuff[5 * 1024];
+	for(;;) {
+		vTaskList(taskBuff);
+		printf("name\t\tState\tPrio\tStack\tTaskNr.\n");
+		printf("%s", taskBuff);
+		printf("blocked ('B'), ready ('R'), deleted ('D') or suspended ('S')\n");
+#if CONFIG_GENERATE_RUN_TIME_STATS > 0
+		printf("name\t\tTime\t\t%%\n");
+		vTaskGetRunTimeStats(taskBuff);
+		printf("%s", taskBuff);
+#endif
+		printf("\n");
+		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
+	}
+}
+#endif
+
 int main() {
 	int32_t ret;
+	struct ftm *ftm;
 	ret = irq_init();
 	CONFIG_ASSERT(ret == 0);
 	
@@ -172,6 +211,23 @@ int main() {
 #endif
 #ifdef CONFIG_RCTEST
 	rcInit();
+#endif
+#ifndef CONFIG_PWM_TEST
+	ftm = ftm_init(3, 32, NULL, NULL, 20000, 700);
+	CONFIG_ASSERT(ftm != NULL);
+	ret = ftm_pwm(ftm, 20000);
+	CONFIG_ASSERT(ret == 0);
+	ret = ftm_setupPWM(ftm, 1);
+	CONFIG_ASSERT(ret == 0);
+	ret = ftm_setPWMDutyCycle(ftm, 1, 10000);
+	CONFIG_ASSERT(ret == 0);
+	xTaskCreate(ledTask, "LED Task", 128, ftm, 1, NULL);
+#endif
+#if CONFIG_USE_STATS_FORMATTING_FUNCTIONS > 0
+	xTaskCreate(taskManTask, "Task Manager Task", 512, ftm, 1, NULL);
+#endif
+#ifdef CONFIG_SPITEST
+	spitest_init();
 #endif
 	vTaskStartScheduler ();
 	for(;;);
