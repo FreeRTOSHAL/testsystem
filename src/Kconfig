@@ -55,4 +55,9 @@ config SPITEST
 	depends on SPI
 	help
 		SPI Test
+config MPUTEST
+	bool "MPU test"
+	depends on MPU9250
+	help
+		MPU Test
 endmenu
