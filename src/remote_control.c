@@ -5,16 +5,21 @@
 #include <string.h>
 #include <remote_control.h>
 #include <flextimer.h>
+struct rc_channel {
+	uint32_t raw;
+	uint32_t value;
+	bool retry;
+	bool corret;
+};
 struct rc {
-	uint32_t channelValue[RC_MAX_CHANNELS];
-	uint32_t channelValueRAW[RC_MAX_CHANNELS];
+	struct rc_channel channel[RC_MAX_CHANNELS];
 	struct ftm *ftm;
 };
 
 
 static void rc_IRQHandler(struct ftm *ftm, void *data, uint32_t channel) {
 	struct rc *rc = data;
-	uint32_t tmp_1 = rc->channelValueRAW[channel];
+	uint32_t tmp_1 = rc->channel[channel].raw;
 	uint32_t tmp_0 = ftm_getChannelTime(ftm, channel);
 	uint32_t tmp;
 
@@ -43,32 +48,48 @@ static void rc_IRQHandler(struct ftm *ftm, void *data, uint32_t channel) {
 	 *      ^ Impulse    ^ Impulse   
 	 */
 	if (tmp > RC_MIN && tmp < RC_MAX) {
-		rc->channelValue[channel] = tmp;
+		rc->channel[channel].value = tmp;
+		rc->channel[channel].corret = true;
+		rc->channel[channel].retry = true;
 	}
 
 	/* Save old Value for next Calculation */
-	rc->channelValueRAW[channel] = tmp_0;
+	rc->channel[channel].raw = tmp_0;
 }
 
-struct rc *rc_init(uint32_t ftmid) {
+static void rc_OverfowHandler(struct ftm *ftm, void *data) {
+	struct rc *rc = data;
+	int i;
+	for (i = 0; i < RC_MAX_CHANNELS; i++) {
+		/* 
+		 * Wait unil next Overfow if !retry = value is not corect
+		 */
+		if (rc->channel[i].retry) {
+			rc->channel[i].retry = false;
+		} else {
+			rc->channel[i].corret = false;
+		}
+	}
+}
+
+
+struct rc *rc_init(struct ftm *ftm) {
 	int32_t ret;
 	struct rc *rc = pvPortMalloc(sizeof(struct rc));
 	if (rc == NULL) {
 		goto rc_init_error_0;
 	}
 	memset(rc, 0, sizeof(struct rc));
-	rc->ftm = ftm_init(ftmid, 32, NULL, rc, 20000, 700);
-	if (rc->ftm == NULL) {
+	rc->ftm = ftm;
+	ret = ftm_setOverflowHandler(rc->ftm, rc_OverfowHandler, rc);
+	if (ret < 0) {
 		goto rc_init_error_1;
 	}
-	ret = ftm_periodic_capture(rc->ftm, rc_IRQHandler);
+	ret = ftm_setCaptureHandler(rc->ftm, rc_IRQHandler, rc);
 	if (ret < 0) {
-		goto rc_init_error_2;
+		goto rc_init_error_1;
 	}
 	return rc;
-rc_init_error_2:
-	//ftm_deinit(ftm); 
-#warning TODO FTM deinit!
 rc_init_error_1:
 	vPortFree(rc);
 rc_init_error_0:
@@ -76,10 +97,16 @@ rc_init_error_0:
 }
 
 int32_t rc_setup(struct rc *rc, uint32_t channel) {
-	rc->channelValue[channel] = 0;
-	rc->channelValueRAW[channel] = 0;
+	rc->channel[channel].raw = 0;
+	rc->channel[channel].value = 0;
+	rc->channel[channel].retry = 0;
+	rc->channel[channel].corret = 0;
 	return ftm_setupCapture(rc->ftm, channel);
 }
 uint32_t rc_get(struct rc *rc, uint32_t channel) {
-	return rc->channelValue[channel];
+	if (rc->channel[channel].corret) {
+		return rc->channel[channel].value;
+	} else {
+		return 0;
+	}
 }

@@ -178,7 +178,9 @@ void taskManTask(void *data) {
 
 int main() {
 	int32_t ret;
+#ifndef CONFIG_PWM_TEST
 	struct ftm *ftm;
+#endif
 	ret = irq_init();
 	CONFIG_ASSERT(ret == 0);
 	
@@ -210,19 +212,19 @@ int main() {
 #ifdef CONFIG_PWM_TEST
 	pwmtest_init();
 #endif
-#ifdef CONFIG_RCTEST
-	rcInit();
-#endif
 #ifndef CONFIG_PWM_TEST
-	ftm = ftm_init(3, 32, NULL, NULL, 20000, 700);
+	ftm = ftm_init(3, 32, 20000, 700);
 	CONFIG_ASSERT(ftm != NULL);
-	ret = ftm_pwm(ftm, 20000);
+	ret = ftm_periodic(ftm, 24000);
 	CONFIG_ASSERT(ret == 0);
 	ret = ftm_setupPWM(ftm, 1);
 	CONFIG_ASSERT(ret == 0);
 	ret = ftm_setPWMDutyCycle(ftm, 1, 10000);
 	CONFIG_ASSERT(ret == 0);
 	xTaskCreate(ledTask, "LED Task", 128, ftm, 1, NULL);
+#ifdef CONFIG_RCTEST
+	rcInit(ftm);
+#endif
 #endif
 #if CONFIG_USE_STATS_FORMATTING_FUNCTIONS > 0
 	xTaskCreate(taskManTask, "Task Manager Task", 512, ftm, 1, NULL);

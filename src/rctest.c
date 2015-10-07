@@ -13,22 +13,32 @@ void rcTask(void *data) {
 	uint32_t time;
 	for (;;) {
 		int i;
+		printf("Chanel: ");
 		for (i = 0; i < 8; i++) {
-			time = rc_get(rc, i);
-			printf("Chanel %d: %" PRIu32 "\n", i, time);
+			if (i != 1) {
+				time = rc_get(rc, i);
+				printf("%d: %04" PRIu32 " ", i, time);
+			}
 		}
-		vTaskDelayUntil(&lastWakeUpTime, 500 / portTICK_PERIOD_MS);
+		printf("\n");
+		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
 	}
 }
 
-void rcInit() {
+void rcInit(struct ftm *ftm) {
 	int32_t ret;
-	struct rc *rc = rc_init(0);
-	ret = rc_setup(rc, 0);
+	struct rc *rc = rc_init(ftm);
+	ret = rc_setup(rc, 5);
 	CONFIG_ASSERT(ret == 0);
-	ret = rc_setup(rc, 1);
+	ret = rc_setup(rc, 4);
+	CONFIG_ASSERT(ret == 0);
+	ret = rc_setup(rc, 3);
 	CONFIG_ASSERT(ret == 0);
 	ret = rc_setup(rc, 2);
+	CONFIG_ASSERT(ret == 0);
+	ret = rc_setup(rc, 7);
+	CONFIG_ASSERT(ret == 0);
+	ret = rc_setup(rc, 6);
 	CONFIG_ASSERT(ret == 0);
 	xTaskCreate(rcTask, "RC Test Task", 512, rc, 1, NULL);
 }

@@ -82,11 +82,11 @@ void rcTask(void *data) {
 int32_t pwmtest_init() {
 	int32_t ret;
 	struct ftm *ftm_capture;
-	struct ftm *ftm = ftm_init(0, 32, NULL, NULL, 20000, 700);
+	struct ftm *ftm = ftm_init(0, 32, 20000, 700);
 	if (ftm == NULL) {
 		return -1;
 	}
-	ret = ftm_pwm(ftm, 20000);
+	ret = ftm_periodic(ftm, 20000);
 	CONFIG_ASSERT(ret == 0);
 	ret = ftm_setupPWM(ftm, 0);
 	CONFIG_ASSERT(ret == 0);
@@ -104,11 +104,15 @@ int32_t pwmtest_init() {
 	ret = ftm_setPWMDutyCycle(ftm, 2, n);
 	CONFIG_ASSERT(ret == 0);
 #ifndef CONFIG_RC
-	ftm_capture = ftm_init(3, 32, &overflowIRQ, NULL, 20000, 700);
+	ftm_capture = ftm_init(3, 32, 20000, 700);
 	if (ftm_capture == NULL) {
 		return -1;
 	}
-	ret = ftm_periodic_capture(ftm_capture, &captureIRQ);
+	ret = ftm_periodic(ftm_capture, 30000);
+	CONFIG_ASSERT(ret == 0);
+	ret = ftm_setOverflowHandler(ftm_capture, &overflowIRQ, NULL);
+	CONFIG_ASSERT(ret == 0);
+	ret = ftm_setCaptureHandler(ftm_capture, &captureIRQ, NULL);
 	CONFIG_ASSERT(ret == 0);
 	ret = ftm_setupCapture(ftm_capture, 2);
 	CONFIG_ASSERT(ret == 0);
