@@ -7,7 +7,7 @@
 #include <remote_control.h>
 #include <rctest.h>
 
-void rcTask(void *data) {
+void rcTestTask(void *data) {
 	struct rc *rc = data;
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	uint32_t time;
@@ -40,5 +40,5 @@ void rcInit(struct ftm *ftm) {
 	CONFIG_ASSERT(ret == 0);
 	ret = rc_setup(rc, 6);
 	CONFIG_ASSERT(ret == 0);
-	xTaskCreate(rcTask, "RC Test Task", 512, rc, 1, NULL);
+	xTaskCreate(rcTestTask, "RC Test Task", 512, rc, 1, NULL);
 }

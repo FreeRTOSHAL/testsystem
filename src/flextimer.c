@@ -32,9 +32,12 @@ static void irqhandle(struct ftm *ftm, void *data) {
 	
 }
 int32_t ftmInit(struct gpio_pin *p) {
+	int32_t ret;
 	pin = p;
-	ftm = ftm_init(0, 64, &irqhandle, NULL);
+	ftm = ftm_init(0, 64, 20000, 700);
 	CONFIG_ASSERT(ftm != NULL);
+	ret = ftm_setOverflowHandler(ftm, &irqhandle, NULL);
+	CONFIG_ASSERT(ret == 0);
 	CONFIG_ASSERT(ftm_oneshot(ftm, n) == 0);
 
 	return 0;

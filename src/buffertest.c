@@ -62,8 +62,8 @@ void bufferInit() {
 
 #ifdef CONFIG_BUFFERTEST_SELF
 void bufferInit2() {
-	buffer3 = buffer_init((struct buffer_base *) buffer_2, 32, sizeof(struct TestData), false);
-	buffer4 = buffer_init((struct buffer_base *) buffer_2, 32, sizeof(struct TestData), true);
+	buffer3 = buffer_init((struct buffer_base *) buffer_2, 32, sizeof(struct TestData), false, 1);
+	buffer4 = buffer_init((struct buffer_base *) buffer_2, 32, sizeof(struct TestData), true, 1);
 	xTaskCreate( buffer3Test, "Buffer 3 Test", 512, NULL, 2, NULL);
 	xTaskCreate( buffer4Test, "Buffer 4 Test", 512, NULL, 3, NULL);
 }
@@ -76,7 +76,7 @@ void buffer1Test(void *data) {
 	for (i = 0; i < 10; i++) {
 		ret = buffer_write(buffer1, (uint8_t *) test, strlen(test) + 1);
 		if (ret < 0) {
-			printf("error: ret: %d\n", ret);
+			printf("error: ret: %ld\n", ret);
 			for(;;);
 		}
 		vTaskDelayUntil(&lastWakeUpTime, 1 / portTICK_PERIOD_MS);
@@ -92,12 +92,12 @@ void buffer2Test(void *data) {
 	for (i = 0; i < 10; i++) {
 		ret = buffer_read(buffer2, (uint8_t *) test, 128, portMAX_DELAY);
 		if (ret < 0) {
-			printf("error: ret: %d\n", ret);
+			printf("error: ret: %ld\n", ret);
 			for(;;);
 		}
-		printf("recv: %s len: %d\n", test,  ret);
+		printf("recv: %s len: %ld\n", test,  ret);
 		if (ret != 18) {
-			printf("error: ret: %d\n", ret);
+			printf("error: ret: %ld\n", ret);
 			for(;;);
 		}
 		vTaskDelayUntil(&lastWakeUpTime, 1 / portTICK_PERIOD_MS);
@@ -117,7 +117,7 @@ void buffer3Test(void *data) {
 	for (i = 0; i < 1000; i++) {
 		ret = buffer_write(buffer3, (uint8_t *) &test, 1);
 		if (ret < 0) {
-			printf("error: ret: %d\n", ret);
+			printf("error: ret: %ld\n", ret);
 			for(;;);
 		}
 		test.value = !test.value;
@@ -135,12 +135,12 @@ void buffer4Test(void *data) {
 	for (i = 0; i < 1000; i++) {
 		ret = buffer_read(buffer4, (uint8_t *) &test, 1, portMAX_DELAY);
 		if (ret < 0) {
-			printf("error: ret: %d\n", ret);
+			printf("error: ret: %ld\n", ret);
 			for(;;);
 		}
-		printf("recv: %s value: %d len: %d\n", test.test, test.value, ret);
+		printf("recv: %s value: %d len: %ld\n", test.test, test.value, ret);
 		if (ret != 1) {
-			printf("error: ret: %d\n", ret);
+			printf("error: ret: %ld\n", ret);
 			for(;;);
 		}
 		if (last != test.value) {
@@ -164,12 +164,12 @@ static void bufferIRQTest(void *data) {
 	for (i = 0; i < 100000000000000; i++) {
 		ret = buffer_write(bufferTX, (uint8_t *) test, strlen(test) + 1);
 		if (ret < 0) {
-			printf("error: ret: %d\n", ret);
+			printf("error: ret: %ld\n", ret);
 			for(;;);
 		}
 		ret = buffer_read(bufferRX, (uint8_t *) test, 128, portMAX_DELAY);
 		if (ret < 0) {
-			printf("error: ret: %d\n", ret);
+			printf("error: ret: %ld\n", ret);
 			for(;;);
 		}
 		vTaskDelayUntil(&lastWakeUpTime, 1 / portTICK_PERIOD_MS);
@@ -185,7 +185,7 @@ static void bufferTTYTest(void *data) {
 	for (i = 0; i < 100000000000000; i++) {
 		ret = buffer_write(bufferTX, (uint8_t *) test, strlen(test));
 		if (ret < 0) {
-			printf("error: ret: %d\n", ret);
+			printf("error: ret: %ld\n", ret);
 			for(;;);
 		}
 		vTaskDelayUntil(&lastWakeUpTime, 10000 / portTICK_PERIOD_MS);

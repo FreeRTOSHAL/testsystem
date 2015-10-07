@@ -1,5 +1,5 @@
 obj-y += test.o
-obj-$(COFING_IRQTEST) += vfxxx_irqtest.o
+obj-$(CONFIG_IRQTEST) += vfxxx_irqtest.o
 obj-$(CONFIG_BUFFERTEST) += buffertest.o
 obj-$(CONFIG_VFXXX_FLEXTIMER_TEST) += flextimer.o
 obj-$(CONFIG_PPM) += ppm.o
