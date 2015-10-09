@@ -60,4 +60,9 @@ config MPUTEST
 	depends on MPU9250
 	help
 		MPU Test
+config ADCTEST
+	bool "ADC Test"
+	depends on ADC
+	help
+		ADC Test
 endmenu

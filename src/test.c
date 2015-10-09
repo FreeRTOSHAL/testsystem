@@ -17,6 +17,7 @@
 #include <flextimer.h>
 #include <spitest.h>
 #include <mputest.h>
+#include <adctest.h>
 
 static struct gpio *gpio = NULL;
 
@@ -234,6 +235,9 @@ int main() {
 #endif
 #ifdef CONFIG_MPUTEST
 	mputest_init();
+#endif
+#ifdef CONFIG_ADCTEST
+	adctest_init();
 #endif
 	vTaskStartScheduler ();
 	for(;;);
