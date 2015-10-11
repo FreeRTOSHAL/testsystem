@@ -65,4 +65,9 @@ config ADCTEST
 	depends on ADC
 	help
 		ADC Test
+config TPSTEST
+	bool "TPSTEST"
+	depends on TPS65381
+	help
+		TPS65381 Test
 endmenu

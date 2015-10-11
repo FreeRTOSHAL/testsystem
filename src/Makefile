@@ -9,3 +9,4 @@ obj-$(CONFIG_RCTEST) += rctest.o
 obj-$(CONFIG_SPITEST) += spitest.o
 obj-$(CONFIG_MPUTEST) += mputest.o
 obj-$(CONFIG_ADCTEST) += adctest.o
+obj-$(CONFIG_TPSTEST) += tpstest.o

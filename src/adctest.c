@@ -13,7 +13,7 @@ void adctestTask(void *data) {
 	for (;;) {
 		val = adc_get(adc, 0, portMAX_DELAY);
 		CONFIG_ASSERT(val >= 0);
-		vin = ((float) val) * (3.3 / 4096);
+		vin = ((float) val) * (3.3 / 4096.) * 10.;
 		printf("VIN: %f V\n", vin);
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
