@@ -10,38 +10,63 @@ static struct tps65381 *tps;
 static void tpstest_task(void *data) {
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	float val;
+	int32_t ret;
 	for(;;) {
+		ret = tps_mux(tps, TPS_VDD5, 100 / portTICK_PERIOD_MS);
+		CONFIG_ASSERT(ret == 0);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 		val = tps_diag(tps, TPS_VDD5, adc, 1, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(val != NAN);
-		printf("TPS_VDD5: %f\n", val);
-		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
+		printf("TPS_VDD5: %f V\n", val);
+
+		ret = tps_mux(tps, TPS_VDD6, 100 / portTICK_PERIOD_MS);
+		CONFIG_ASSERT(ret == 0);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 		val = tps_diag(tps, TPS_VDD6, adc, 1, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(val != NAN);
-		printf("TPS_VDD6: %f\n", val);
-		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
+		printf("TPS_VDD6: %f V\n", val);
+
+		ret = tps_mux(tps, TPS_VCP, 100 / portTICK_PERIOD_MS);
+		CONFIG_ASSERT(ret == 0);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 		val = tps_diag(tps, TPS_VCP, adc, 1, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(val != NAN);
-		printf("TPS_VCP: %f\n", val);
-		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
+		printf("TPS_VCP: %f V\n", val);
+
+		ret = tps_mux(tps, TPS_VSOUT1, 100 / portTICK_PERIOD_MS);
+		CONFIG_ASSERT(ret == 0);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 		val = tps_diag(tps, TPS_VSOUT1, adc, 1, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(val != NAN);
-		printf("TPS_VSOUT1: %f\n", val);
-		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
+		printf("TPS_VSOUT1: %f V\n", val);
+
+		ret = tps_mux(tps, TPS_VBAT_SAFING, 100 / portTICK_PERIOD_MS);
+		CONFIG_ASSERT(ret == 0);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 		val = tps_diag(tps, TPS_VBAT_SAFING, adc, 1, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(val != NAN);
-		printf("TPS_VBAT_SAFING: %f\n", val);
-		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
+		printf("TPS_VBAT_SAFING: %f V\n", val);
+
+		ret = tps_mux(tps, TPS_VBAT, 100 / portTICK_PERIOD_MS);
+		CONFIG_ASSERT(ret == 0);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 		val = tps_diag(tps, TPS_VBAT, adc, 1, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(val != NAN);
-		printf("TPS_VBAT: %f\n", val);
-		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
+		printf("TPS_VBAT : %f V\n", val);
+
+		ret = tps_mux(tps, TPS_MAIN_BG, 100 / portTICK_PERIOD_MS);
+		CONFIG_ASSERT(ret == 0);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 		val = tps_diag(tps, TPS_MAIN_BG, adc, 1, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(val != NAN);
-		printf("TPS_MAIN_BG: %f\n", val);
-		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
+		printf("TPS_MAIN_BG: %f V\n", val);
+
+		ret = tps_mux(tps, TPS_VMON_BG, 100 / portTICK_PERIOD_MS);
+		CONFIG_ASSERT(ret == 0);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 		val = tps_diag(tps, TPS_VMON_BG, adc, 1, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(val != NAN);
-		printf("TPS_VMON_BG: %f\n", val);
+		printf("TPS_VMON_BG: %f V\n", val);
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
