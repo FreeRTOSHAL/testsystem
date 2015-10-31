@@ -13,8 +13,12 @@
 #include <flextimer_test.h>
 #include <ppm.h>
 #include <pwmtest.h>
-#include <rctest.h>
+#ifdef CONFIG_RCTEST
+# include <rctest.h>
+#endif
+#ifdef CONFIG_FLEXTIMER
 #include <flextimer.h>
+#endif
 #include <spitest.h>
 #include <mputest.h>
 #include <adctest.h>
@@ -127,6 +131,7 @@ void testTask3(void *data) {
 	}
 }
 
+#ifdef CONFIG_FLEXTIMER
 void ledTask(void *data) {
 	int32_t ret;
 	bool up = true;
@@ -157,6 +162,7 @@ void ledTask(void *data) {
 		vTaskDelayUntil(&lastWakeUpTime, waittime / portTICK_PERIOD_MS);
 	}
 }
+#endif
 
 #if CONFIG_USE_STATS_FORMATTING_FUNCTIONS > 0
 void taskManTask(void *data) {
@@ -180,21 +186,19 @@ void taskManTask(void *data) {
 
 int main() {
 	int32_t ret;
-#ifndef CONFIG_PWM_TEST
+#if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
 	struct ftm *ftm;
 #endif
-	ret = irq_init();
-	CONFIG_ASSERT(ret == 0);
-	
 	struct uart *uart = uart_init(6, 115200);
 #ifdef CONFIG_NEWLIB
 	ret = newlib_init(uart, uart);
 	CONFIG_ASSERT(ret == 0);
 #endif
+	printf("Init Devices\n");
 	ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
-	xTaskCreate( testTask, "Test Task", 512, NULL, 1, NULL);
-	xTaskCreate( testTask2, "Test 2 Task", 512, NULL, 1, NULL);
+	/*xTaskCreate( testTask, "Test Task", 512, NULL, 1, NULL);
+	xTaskCreate( testTask2, "Test 2 Task", 512, NULL, 1, NULL);*/
 	/*xTaskCreate( testTask3, "Test 3 Task", 128, NULL, 1, NULL);*/
 #ifdef CONFIG_BUFFERTEST
 	bufferInit();
@@ -214,7 +218,7 @@ int main() {
 #ifdef CONFIG_PWM_TEST
 	pwmtest_init();
 #endif
-#ifndef CONFIG_PWM_TEST
+#if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
 	ftm = ftm_init(3, 32, 20000, 700);
 	CONFIG_ASSERT(ftm != NULL);
 	ret = ftm_periodic(ftm, 24000);
@@ -229,7 +233,7 @@ int main() {
 #endif
 #endif
 #if CONFIG_USE_STATS_FORMATTING_FUNCTIONS > 0
-	xTaskCreate(taskManTask, "Task Manager Task", 512, ftm, 1, NULL);
+	xTaskCreate(taskManTask, "Task Manager Task", 512, NULL, 1, NULL);
 #endif
 #ifdef CONFIG_SPITEST
 	spitest_init();
@@ -243,6 +247,7 @@ int main() {
 #ifdef CONFIG_TPSTEST
 	tpstest_init();
 #endif
+	printf("Start Scheduler\n");
 	vTaskStartScheduler ();
 	for(;;);
 	return 0;
