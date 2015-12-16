@@ -184,8 +184,33 @@ void taskManTask(void *data) {
 }
 #endif
 
+#ifdef CONFIG_UARTTEST
+void uart_test1(void *data) {
+	struct uart *uart = uart_init(1, 115200);
+	TickType_t lastWakeUpTime = xTaskGetTickCount();
+	for(;;) {
+		uart_puts(uart, "Test\n", 0);
+		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
+	}
+}
+void uart_test2(void *data) {
+	struct uart *uart = uart_init(6, 115200);
+	TickType_t lastWakeUpTime = xTaskGetTickCount();
+	for(;;) {
+		uart_puts(uart, "Test\n", 0);
+		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
+	}
+}
+void uarttest_init() {
+	xTaskCreate(uart_test1, "UART Test Task 1", 512, NULL, 2, NULL);
+	xTaskCreate(uart_test2, "UART Test Task 2", 512, NULL, 2, NULL);
+}
+#endif
+
 int main() {
 	int32_t ret;
+	ret = irq_init();
+	CONFIG_ASSERT(ret == 0);
 #if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
 	struct ftm *ftm;
 #endif
@@ -246,6 +271,9 @@ int main() {
 #endif
 #ifdef CONFIG_TPSTEST
 	tpstest_init();
+#endif
+#ifdef CONFIG_UARTTEST
+	uarttest_init();
 #endif
 	printf("Start Scheduler\n");
 	vTaskStartScheduler ();
