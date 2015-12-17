@@ -164,3 +164,4 @@ CONFIG_EXTRA_LDFLAGS=""
 # Application Config
 #
 # CONFIG_BUFFERTEST is not set
+# CONFIG_UARTTEST is not set
