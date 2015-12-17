@@ -186,7 +186,7 @@ void taskManTask(void *data) {
 
 #ifdef CONFIG_UARTTEST
 void uart_test1(void *data) {
-	struct uart *uart = uart_init(1, 115200);
+	struct uart *uart = uart_init(0, 115200);
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
 		uart_puts(uart, "Test\n", 0);
@@ -194,7 +194,7 @@ void uart_test1(void *data) {
 	}
 }
 void uart_test2(void *data) {
-	struct uart *uart = uart_init(6, 115200);
+	struct uart *uart = uart_init(1, 115200);
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
 		uart_puts(uart, "Test\n", 0);
@@ -214,7 +214,7 @@ int main() {
 #if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
 	struct ftm *ftm;
 #endif
-	struct uart *uart = uart_init(6, 115200);
+	struct uart *uart = uart_init(1, 115200);
 #ifdef CONFIG_NEWLIB
 	ret = newlib_init(uart, uart);
 	CONFIG_ASSERT(ret == 0);
