@@ -39,24 +39,24 @@ int32_t initGPIO() {
 		return -1;
 	}
 #ifndef CONFIG_PWM_TEST
-	pinPTB0 = gpio_getPin(gpio, PTB0, GPIO_OUTPUT);
+	pinPTB0 = gpioPin_init(gpio, PTB0, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (pinPTB0 == NULL) {
 		return -1;
 	}
-	pinPTB2 = gpio_getPin(gpio, PTB2, GPIO_OUTPUT);
+	pinPTB2 = gpioPin_init(gpio, PTB2, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (pinPTB2 == NULL) {
 		return -1;
 	}
 #endif
-	pinPTA18 = gpio_getPin(gpio, PTA18, GPIO_OUTPUT);
+	pinPTA18 = gpioPin_init(gpio, PTA18, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (pinPTA18 == NULL) {
 		return -1;
 	}
-	pinPTA19 = gpio_getPin(gpio, PTA19, GPIO_OUTPUT);
+	pinPTA19 = gpioPin_init(gpio, PTA19, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (pinPTA19 == NULL) {
 		return -1;
 	}
-	pinPTB17 = gpio_getPin(gpio, PTB17, GPIO_OUTPUT);
+	pinPTB17 = gpioPin_init(gpio, PTB17, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (pinPTB17 == NULL) {
 		return -1;
 	}
@@ -75,9 +75,9 @@ void vApplicationTickHook() {
 #endif*/
 #ifndef CONFIG_PWM_TEST
 #ifndef CONFIG_ASSERT_DISABLED
-	CONFIG_ASSERT(gpio_togglePin(pinPTB0) == 0);
+	CONFIG_ASSERT(gpioPin_togglePin(pinPTB0) == 0);
 #else
-	gpio_togglePin(pinPTB0);
+	gpioPin_togglePin(pinPTB0);
 #endif
 #endif
 }
@@ -103,9 +103,9 @@ void testTask(void *data) {
 
 #ifndef CONFIG_PWM_TEST
 #ifndef CONFIG_ASSERT_DISABLED
-		CONFIG_ASSERT(gpio_togglePin(pinPTB2) == 0);
+		CONFIG_ASSERT(gpioPin_togglePin(pinPTB2) == 0);
 #else
-		gpio_togglePin(pinPTB2);
+		gpioPin_togglePin(pinPTB2);
 #endif
 #endif
 		vTaskDelayUntil(&lastWakeUpTime, 1);
@@ -117,9 +117,9 @@ void testTask2(void *data) {
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
 #ifndef CONFIG_ASSERT_DISABLED
-		CONFIG_ASSERT(gpio_togglePin(pinPTA18) == 0);
+		CONFIG_ASSERT(gpioPin_togglePin(pinPTA18) == 0);
 #else
-		gpio_togglePin(pinPTA18);
+		gpioPin_togglePin(pinPTA18);
 #endif
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
@@ -155,7 +155,7 @@ void ledTask(void *data) {
 		CONFIG_ASSERT(ret == 0);
 		if (n == 0 || n == 20000) {
 			waittime = 1000;
-			gpio_togglePin(pinPTB17);
+			gpioPin_togglePin(pinPTB17);
 		} else {
 			waittime = 20;
 		}

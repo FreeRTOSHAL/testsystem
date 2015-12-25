@@ -43,7 +43,7 @@ struct ppm {
 
 static int32_t ppm_startTransfer(struct ppm *ppm) {
 	int32_t ret;
-	gpio_setPin(ppm->pin);
+	gpioPin_setPin(ppm->pin);
 	ppm->sum -= PPM_MIN_TIME;
 	ret = ftm_oneshot(ppm->timer, PPM_MIN_TIME);
 	if (ret < 0) {
@@ -60,7 +60,7 @@ static int32_t ppm_data(struct ppm *ppm) {
 	ppm->pos++;
 	ppm->state = PPM_DATA;
 	ppm->sum -= time + PPM_MIN_TIME;
-	gpio_clearPin(ppm->pin);
+	gpioPin_clearPin(ppm->pin);
 	ret = ftm_oneshot(ppm->timer, time + PPM_MIN_TIME);
 	if (ret < 0) {
 		return ret;
@@ -81,7 +81,7 @@ static int32_t ppm_endPause(struct ppm *ppm) {
 }
 static int32_t ppm_pause(struct ppm *ppm) {
 	BaseType_t xHigherPriorityTaskWoken;
-	gpio_clearPin(ppm->pin);
+	gpioPin_clearPin(ppm->pin);
 	ppm->waittime = (ppm->sum / 1000);
 	if (ppm->waittime > 0) {
 		ppm->sum -= ppm->waittime * 1000;
@@ -171,7 +171,7 @@ struct ppm *ppm_init(uint32_t slots, struct gpio_pin *pin) {
 	if (ppm->timer == NULL) {
 		goto ppm_init_error_2;
 	}
-	gpio_clearPin(pin);
+	gpioPin_clearPin(pin);
 	
 	ppm->sem = xSemaphoreCreateBinary();
 	if (ppm->sem == NULL) {

@@ -13,9 +13,9 @@ static void irqhandle(struct ftm *ftm, void *data) {
 	(void) data;
 	#if 1
 	#ifndef CONFIG_ASSERT_DISABLED
-		CONFIG_ASSERT(gpio_togglePin(pin) == 0);
+		CONFIG_ASSERT(gpioPin_togglePin(pin) == 0);
 	#else
-		gpio_togglePin(pin);
+		gpioPin_togglePin(pin);
 	#endif
 	#endif
 	/*if (up) {
