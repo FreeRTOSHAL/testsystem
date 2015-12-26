@@ -25,19 +25,19 @@ config IRQTEST
 	depends on MACH_VF610
 	help
 		IRQ Test
-config VFXXX_FLEXTIMER_TEST
-	bool "VFxxx Flextimer Test"
-	depends on FLEXTIMER
+config TIMER_TEST
+	bool "Timer Test"
+	depends on TIMER
 	help
 		Flextimer Test
 config PPM
 	bool "PPM Driver"
-	depends on FLEXTIMER
+	depends on TIMER
 	help
 		PPM Driver
 config PWM_TEST
 	bool "PWM Test"
-	depends on FLEXTIMER
+	depends on PWM
 	help
 		PWM Tests
 config RC

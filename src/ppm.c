@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include <timer.h>
 #include <flextimer.h>
 #include <ppm.h>
 
@@ -28,7 +29,7 @@ enum ppm_state{
 struct ppm {
 	uint32_t slots;
 	volatile struct ppm_slot *slot;
-	struct ftm *timer;
+	struct timer *timer;
 	struct gpio_pin *pin;
 
 	SemaphoreHandle_t sem;
@@ -45,7 +46,7 @@ static int32_t ppm_startTransfer(struct ppm *ppm) {
 	int32_t ret;
 	gpioPin_setPin(ppm->pin);
 	ppm->sum -= PPM_MIN_TIME;
-	ret = ftm_oneshot(ppm->timer, PPM_MIN_TIME);
+	ret = timer_oneshot(ppm->timer, PPM_MIN_TIME);
 	if (ret < 0) {
 		return ret;
 	}
@@ -53,6 +54,9 @@ static int32_t ppm_startTransfer(struct ppm *ppm) {
 }
 
 static int32_t ppm_data(struct ppm *ppm) {
+#include <timer.h>
+#include <timer.h>
+#include <timer.h>
 	int32_t ret;
 	int32_t time;
 	CONFIG_ASSERT(ppm->pos < ppm->slots);
@@ -61,7 +65,7 @@ static int32_t ppm_data(struct ppm *ppm) {
 	ppm->state = PPM_DATA;
 	ppm->sum -= time + PPM_MIN_TIME;
 	gpioPin_clearPin(ppm->pin);
-	ret = ftm_oneshot(ppm->timer, time + PPM_MIN_TIME);
+	ret = timer_oneshot(ppm->timer, time + PPM_MIN_TIME);
 	if (ret < 0) {
 		return ret;
 	}
@@ -73,14 +77,14 @@ static int32_t ppm_last(struct ppm *ppm) {
 }
 static int32_t ppm_endPause(struct ppm *ppm) {
 	int32_t ret;
-	ret = ftm_oneshot(ppm->timer, ppm->sum);
+	ret = timer_oneshot(ppm->timer, ppm->sum);
 	if (ret < 0) {
 		return ret;
 	}
 	return 0;
 }
 static int32_t ppm_pause(struct ppm *ppm) {
-	BaseType_t xHigherPriorityTaskWoken;
+	BaseType_t xHigherPriorityTaskWoken = 0;
 	gpioPin_clearPin(ppm->pin);
 	ppm->waittime = (ppm->sum / 1000);
 	if (ppm->waittime > 0) {
@@ -94,7 +98,7 @@ static int32_t ppm_pause(struct ppm *ppm) {
 			ppm_start(ppm);
 		}
 	}
-	return 0;
+	return xHigherPriorityTaskWoken;
 }
 void ppm_task(void *data) {
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
@@ -121,7 +125,7 @@ int32_t ppm_start(struct ppm *ppm) {
 	return ppm_startTransfer(ppm);
 }
 
-static void timerHandler(struct ftm *ftm, void *data) {
+static bool timerHandler(struct timer *ftm, void *data) {
 	int32_t ret = 0;
 	struct ppm *ppm = data;
 	switch(ppm->state) {
@@ -141,6 +145,7 @@ static void timerHandler(struct ftm *ftm, void *data) {
 		case PPM_LAST:
 			ppm->state = PPM_PAUSE;
 			ret = ppm_pause(ppm);
+			return ret;
 			break;
 		case PPM_PAUSE:
 			ppm->state = PPM_START;
@@ -148,12 +153,14 @@ static void timerHandler(struct ftm *ftm, void *data) {
 			break;
 		case PPM_STOPED:	
 		default:
-			return;
+			return 0;
 	}
 	CONFIG_ASSERT(ret == 0);
+	return 0;
 }
 
 struct ppm *ppm_init(uint32_t slots, struct gpio_pin *pin) {
+	int ret;
 	struct ppm *ppm = pvPortMalloc(sizeof(struct ppm));
 	if (ppm == NULL) {
 		goto ppm_init_error_0;
@@ -167,8 +174,12 @@ struct ppm *ppm_init(uint32_t slots, struct gpio_pin *pin) {
 		goto ppm_init_error_1;
 	}
 	memset((void *) ppm->slot, 0, ppm->slots);
-	ppm->timer = ftm_init(0, 32, timerHandler, ppm);
+	ppm->timer = timer_init(0, 32, 20000, 700);
 	if (ppm->timer == NULL) {
+		goto ppm_init_error_2;
+	}
+	ret = timer_setOverflowCallback(ppm->timer, timerHandler, ppm);
+	if (ret < 0) {
 		goto ppm_init_error_2;
 	}
 	gpioPin_clearPin(pin);

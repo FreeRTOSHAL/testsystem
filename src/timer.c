@@ -1,15 +1,15 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <task.h>
-#include <flextimer.h>
+#include <timer.h>
 #include <gpio.h>
 
-struct ftm *ftm;
+struct timer *timer;
 struct gpio_pin *pin;
 int n = 20000;
 bool up = true;
 
-static void irqhandle(struct ftm *ftm, void *data) {
+static bool irqhandle(struct timer *timer, void *data) {
 	(void) data;
 	#if 1
 	#ifndef CONFIG_ASSERT_DISABLED
@@ -18,7 +18,7 @@ static void irqhandle(struct ftm *ftm, void *data) {
 		gpioPin_togglePin(pin);
 	#endif
 	#endif
-	/*if (up) {
+	if (up) {
 		n+=100;
 	} else {
 		n-=100;
@@ -27,19 +27,18 @@ static void irqhandle(struct ftm *ftm, void *data) {
 		up = false;
 	} else if (n <= 500) {
 		up = true;
-	}*/
-	CONFIG_ASSERT(ftm_oneshot(ftm, n) == 0);
-	
+	}
+	CONFIG_ASSERT(timer_oneshot(timer, n) == 0);
+	return false;
 }
-int32_t ftmInit(struct gpio_pin *p) {
+int32_t timerInit(struct gpio_pin *p) {
 	int32_t ret;
 	pin = p;
-	ftm = ftm_init(0, 64, 20000, 700);
-	CONFIG_ASSERT(ftm != NULL);
-	ret = ftm_setOverflowHandler(ftm, &irqhandle, NULL);
+	timer = timer_init(0, 64, 20000, 700);
+	CONFIG_ASSERT(timer != NULL);
+	ret = timer_setOverflowCallback(timer, &irqhandle, NULL);
 	CONFIG_ASSERT(ret == 0);
-	CONFIG_ASSERT(ftm_oneshot(ftm, n) == 0);
-
+	CONFIG_ASSERT(timer_oneshot(timer, n) == 0);
 	return 0;
 }
 

@@ -25,7 +25,7 @@ void rcTestTask(void *data) {
 	}
 }
 
-void rcInit(struct ftm *ftm) {
+void rcInit(struct timer *ftm) {
 	int32_t ret;
 	struct rc *rc = rc_init(ftm);
 	ret = rc_setup(rc, 5);

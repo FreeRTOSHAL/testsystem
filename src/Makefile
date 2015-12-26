@@ -1,7 +1,7 @@
 obj-y += test.o
 obj-$(CONFIG_IRQTEST) += vfxxx_irqtest.o
 obj-$(CONFIG_BUFFERTEST) += buffertest.o
-obj-$(CONFIG_VFXXX_FLEXTIMER_TEST) += flextimer.o
+obj-$(CONFIG_TIMER_TEST) += timer.o
 obj-$(CONFIG_PPM) += ppm.o
 obj-$(CONFIG_PWM_TEST) += pwmtest.o
 obj-$(CONFIG_RC) += remote_control.o

@@ -16,6 +16,7 @@
 #ifdef CONFIG_RCTEST
 # include <rctest.h>
 #endif
+#include <timer.h>
 #ifdef CONFIG_FLEXTIMER
 #include <flextimer.h>
 #endif
@@ -136,7 +137,7 @@ void ledTask(void *data) {
 	int32_t ret;
 	bool up = true;
 	uint64_t n = 10000;
-	struct ftm *ftm = data;
+	struct timer *ftm = data;
 	TickType_t waittime = 20;
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
@@ -212,7 +213,7 @@ int main() {
 	ret = irq_init();
 	CONFIG_ASSERT(ret == 0);
 #if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
-	struct ftm *ftm;
+	struct timer *ftm;
 #endif
 	struct uart *uart = uart_init(1, 115200);
 #ifdef CONFIG_NEWLIB
@@ -244,9 +245,9 @@ int main() {
 	pwmtest_init();
 #endif
 #if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
-	ftm = ftm_init(3, 32, 20000, 700);
+	ftm = timer_init(3, 32, 20000, 700);
 	CONFIG_ASSERT(ftm != NULL);
-	ret = ftm_periodic(ftm, 24000);
+	ret = timer_periodic(ftm, 24000);
 	CONFIG_ASSERT(ret == 0);
 	ret = ftm_setupPWM(ftm, 1);
 	CONFIG_ASSERT(ret == 0);

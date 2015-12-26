@@ -13,11 +13,11 @@ struct rc_channel {
 };
 struct rc {
 	struct rc_channel channel[RC_MAX_CHANNELS];
-	struct ftm *ftm;
+	struct timer *ftm;
 };
 
 
-static void rc_IRQHandler(struct ftm *ftm, void *data, uint32_t channel) {
+static void rc_IRQHandler(struct timer *ftm, void *data, uint32_t channel) {
 	struct rc *rc = data;
 	uint32_t tmp_1 = rc->channel[channel].raw;
 	uint32_t tmp_0 = ftm_getChannelTime(ftm, channel);
@@ -57,7 +57,7 @@ static void rc_IRQHandler(struct ftm *ftm, void *data, uint32_t channel) {
 	rc->channel[channel].raw = tmp_0;
 }
 
-static void rc_OverfowHandler(struct ftm *ftm, void *data) {
+static bool rc_OverfowHandler(struct timer *ftm, void *data) {
 	struct rc *rc = data;
 	int i;
 	for (i = 0; i < RC_MAX_CHANNELS; i++) {
@@ -70,10 +70,11 @@ static void rc_OverfowHandler(struct ftm *ftm, void *data) {
 			rc->channel[i].corret = false;
 		}
 	}
+	return 0;
 }
 
 
-struct rc *rc_init(struct ftm *ftm) {
+struct rc *rc_init(struct timer *ftm) {
 	int32_t ret;
 	struct rc *rc = pvPortMalloc(sizeof(struct rc));
 	if (rc == NULL) {
@@ -81,7 +82,7 @@ struct rc *rc_init(struct ftm *ftm) {
 	}
 	memset(rc, 0, sizeof(struct rc));
 	rc->ftm = ftm;
-	ret = ftm_setOverflowHandler(rc->ftm, rc_OverfowHandler, rc);
+	ret = timer_setOverflowCallback(rc->ftm, rc_OverfowHandler, rc);
 	if (ret < 0) {
 		goto rc_init_error_1;
 	}
