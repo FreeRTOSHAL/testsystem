@@ -17,7 +17,7 @@ struct rc {
 };
 
 
-static void rc_IRQHandler(struct timer *ftm, void *data, uint32_t channel) {
+static bool rc_IRQHandler(struct timer *ftm, void *data, uint32_t channel) {
 	struct rc *rc = data;
 	uint32_t tmp_1 = rc->channel[channel].raw;
 	uint32_t tmp_0 = ftm_getChannelTime(ftm, channel);
@@ -55,6 +55,7 @@ static void rc_IRQHandler(struct timer *ftm, void *data, uint32_t channel) {
 
 	/* Save old Value for next Calculation */
 	rc->channel[channel].raw = tmp_0;
+	return 0;
 }
 
 static bool rc_OverfowHandler(struct timer *ftm, void *data) {
