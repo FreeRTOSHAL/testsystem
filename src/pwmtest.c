@@ -2,14 +2,15 @@
 #include <stdlib.h>
 #include <FreeRTOS.h>
 #include <task.h>
-#include <flextimer.h>
+#include <timer.h>
+#include <pwm.h>
 #include <remote_control.h>
 
 static int32_t n = 0;
 bool crit = false;
 
 void pwmTask(void *data) {
-	struct ftm *ftm = data;
+	struct pwm **pwm = data;
 	int32_t ret;
 	bool up = true;
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
@@ -26,11 +27,11 @@ void pwmTask(void *data) {
 			}
 			n -= 500;
 		}
-		ret = ftm_setPWMDutyCycle(ftm, 0, n);
+		ret = pwm_setDutyCycle(pwm[0], n);
 		CONFIG_ASSERT(ret == 0);
-		ret = ftm_setPWMDutyCycle(ftm, 1, n);
+		ret = pwm_setDutyCycle(pwm[1], n);
 		CONFIG_ASSERT(ret == 0);
-		ret = ftm_setPWMDutyCycle(ftm, 2, n);
+		ret = pwm_setDutyCycle(pwm[2], n);
 		CONFIG_ASSERT(ret == 0);
 		crit = false;
 		vTaskDelayUntil(&lastWakeUpTime, 20 / portTICK_PERIOD_MS);
@@ -81,27 +82,28 @@ void rcTask(void *data) {
 
 int32_t pwmtest_init() {
 	int32_t ret;
-	struct ftm *ftm_capture;
-	struct ftm *ftm = ftm_init(0, 32, 20000, 700);
+	struct timer *ftm_capture = timer_init(1, 32, 20000, 700);
+	struct timer *ftm = timer_init(0, 32, 20000, 700);
+	struct pwm *pwm[3];
 	if (ftm == NULL) {
 		return -1;
 	}
-	ret = ftm_periodic(ftm, 20000);
+	ret = timer_periodic(ftm, 20000);
 	CONFIG_ASSERT(ret == 0);
-	ret = ftm_setupPWM(ftm, 0);
-	CONFIG_ASSERT(ret == 0);
-	ret = ftm_setupPWM(ftm, 2);
-	CONFIG_ASSERT(ret == 0);
-	ret = ftm_setupPWM(ftm, 1);
-	CONFIG_ASSERT(ret == 0);
+	pwm[0] = pwm_init(0, NULL);
+	CONFIG_ASSERT(pwm[0] != NULL);
+	pwm[1] = pwm_init(2, NULL);
+	CONFIG_ASSERT(pwm[1] != NULL);
+	pwm[2] = pwm_init(1, NULL);
+	CONFIG_ASSERT(pwm[2] != NULL);
 
 	n = 10000;
 	
-	ret = ftm_setPWMDutyCycle(ftm, 0, n);
+	ret = pwm_setDutyCycle(pwm[0], n);
 	CONFIG_ASSERT(ret == 0);
-	ret = ftm_setPWMDutyCycle(ftm, 1, n);
+	ret = pwm_setDutyCycle(pwm[1], n);
 	CONFIG_ASSERT(ret == 0);
-	ret = ftm_setPWMDutyCycle(ftm, 2, n);
+	ret = pwm_setDutyCycle(pwm[2], n);
 	CONFIG_ASSERT(ret == 0);
 #ifndef CONFIG_RC
 	ftm_capture = ftm_init(3, 32, 20000, 700);
@@ -118,7 +120,7 @@ int32_t pwmtest_init() {
 	CONFIG_ASSERT(ret == 0);
 #else
 	{
-		struct rc *rc = rc_init(3);
+		struct rc *rc = rc_init(ftm_capture);
 		ret = rc_setup(rc, 2);
 		CONFIG_ASSERT(ret == 0);
 		xTaskCreate(rcTask, "RC Task", 512, rc, 1, NULL);

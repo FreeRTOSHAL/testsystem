@@ -17,6 +17,7 @@
 # include <rctest.h>
 #endif
 #include <timer.h>
+#include <pwm.h>
 #ifdef CONFIG_FLEXTIMER
 #include <flextimer.h>
 #endif
@@ -137,7 +138,7 @@ void ledTask(void *data) {
 	int32_t ret;
 	bool up = true;
 	uint64_t n = 10000;
-	struct timer *ftm = data;
+	struct pwm *pwm = data;
 	TickType_t waittime = 20;
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
@@ -152,7 +153,7 @@ void ledTask(void *data) {
 			}
 			n-=400;
 		}
-		ret = ftm_setPWMDutyCycle(ftm, 1, n);
+		ret = pwm_setDutyCycle(pwm, n);
 		CONFIG_ASSERT(ret == 0);
 		if (n == 0 || n == 20000) {
 			waittime = 1000;
@@ -214,6 +215,7 @@ int main() {
 	CONFIG_ASSERT(ret == 0);
 #if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
 	struct timer *ftm;
+	struct pwm *pwm;
 #endif
 	struct uart *uart = uart_init(1, 115200);
 #ifdef CONFIG_NEWLIB
@@ -245,15 +247,15 @@ int main() {
 	pwmtest_init();
 #endif
 #if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
-	ftm = timer_init(3, 32, 20000, 700);
+	ftm = timer_init(1, 32, 20000, 700);
 	CONFIG_ASSERT(ftm != NULL);
-	ret = timer_periodic(ftm, 24000);
+	pwm = pwm_init(3, NULL); 
+	CONFIG_ASSERT(pwm != NULL);
+	ret = pwm_setPeriod(pwm, 24000);
 	CONFIG_ASSERT(ret == 0);
-	ret = ftm_setupPWM(ftm, 1);
+	ret = pwm_setDutyCycle(pwm, 10000);
 	CONFIG_ASSERT(ret == 0);
-	ret = ftm_setPWMDutyCycle(ftm, 1, 10000);
-	CONFIG_ASSERT(ret == 0);
-	xTaskCreate(ledTask, "LED Task", 128, ftm, 1, NULL);
+	xTaskCreate(ledTask, "LED Task", 128, pwm, 1, NULL);
 #ifdef CONFIG_RCTEST
 	rcInit(ftm);
 #endif
