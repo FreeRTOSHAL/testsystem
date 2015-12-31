@@ -1,5 +1,5 @@
 #ifndef RCTEST_H_
 #define RCTEST_H_
-#include <flextimer.h>
+#include <timer.h>
 void rcInit(struct timer *ftm);
 #endif

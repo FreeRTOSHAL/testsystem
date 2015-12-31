@@ -8,7 +8,6 @@
 #include <string.h>
 
 #include <timer.h>
-#include <flextimer.h>
 #include <ppm.h>
 
 #define PPM_MIN_TIME 500

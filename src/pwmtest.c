@@ -121,8 +121,10 @@ int32_t pwmtest_init() {
 #else
 	{
 		struct rc *rc = rc_init(ftm_capture);
-		ret = rc_setup(rc, 2);
-		CONFIG_ASSERT(ret == 0);
+		struct capture *cap = capture_init(2, NULL);
+		CONFIG_ASSERT(cap != NULL);
+		ret = rc_setup(rc, cap);
+		CONFIG_ASSERT(ret >= 0);
 		xTaskCreate(rcTask, "RC Task", 512, rc, 1, NULL);
 	}
 #endif

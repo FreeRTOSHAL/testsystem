@@ -18,9 +18,6 @@
 #endif
 #include <timer.h>
 #include <pwm.h>
-#ifdef CONFIG_FLEXTIMER
-#include <flextimer.h>
-#endif
 #include <spitest.h>
 #include <mputest.h>
 #include <adctest.h>
