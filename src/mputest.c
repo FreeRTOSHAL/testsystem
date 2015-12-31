@@ -25,10 +25,8 @@ void mputest_initTask(void *data) {
 	struct spi *spi;
 	struct mpu9250 *mpu;
 	struct spi_slave *slave[3];
-	spi = spi_init(1);
-	CONFIG_ASSERT(spi != NULL);
 	{
-		struct spi_ops ops = {
+		struct spi_opt opt = {
 			.lsb = false,
 			.cpol = false,
 			.cpha = false,
@@ -41,17 +39,17 @@ void mputest_initTask(void *data) {
 			.cs_delay = 500,
 			.bautrate = 500000,
 		};
-		spi = spi_init(1);
+		spi = spi_init(1, SPI_3WIRE_CS, NULL);
 		CONFIG_ASSERT(spi != NULL);
-		slave[0] = spi_slave(spi, &ops);
+		slave[0] = spiSlave_init(spi, &opt);
 		CONFIG_ASSERT(slave[0] != NULL);
-		ops.cs_hold = 6;
-		ops.cs_delay = 8;
-		ops.cs = 1;
-		slave[1] = spi_slave(spi, &ops);
+		opt.cs_hold = 6;
+		opt.cs_delay = 8;
+		opt.cs = 1;
+		slave[1] = spiSlave_init(spi, &opt);
 		CONFIG_ASSERT(slave[1] != NULL);
-		ops.cs = 2;
-		slave[2] = spi_slave(spi, &ops);
+		opt.cs = 2;
+		slave[2] = spiSlave_init(spi, &opt);
 		CONFIG_ASSERT(slave[2] != NULL);
 	}
 	mpu = mpu9250_init(slave[0], portMAX_DELAY);

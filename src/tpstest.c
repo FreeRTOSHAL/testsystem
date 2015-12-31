@@ -73,7 +73,7 @@ static void tpstest_task(void *data) {
 
 static void tpstest_initTask(void *data) {
 	struct spi *spi;
-	struct spi_ops ops = {
+	struct spi_opt opt = {
 		.lsb = false,
 		.cpol = false,
 		.cpha = true,
@@ -88,9 +88,9 @@ static void tpstest_initTask(void *data) {
 	};
 	struct spi_slave *slave;
 	int32_t ret;
-	spi = spi_init(0);
+	spi = spi_init(0, SPI_3WIRE_CS, NULL);
 	CONFIG_ASSERT(spi != NULL);
-	slave = spi_slave(spi, &ops);
+	slave = spiSlave_init(spi, &opt);
 	CONFIG_ASSERT(slave != NULL);
 	tps = tps_init(slave, 100 / portTICK_PERIOD_MS);
 	CONFIG_ASSERT(tps != NULL);
