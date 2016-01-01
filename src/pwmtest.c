@@ -90,11 +90,11 @@ int32_t pwmtest_init() {
 	}
 	ret = timer_periodic(ftm, 20000);
 	CONFIG_ASSERT(ret == 0);
-	pwm[0] = pwm_init(0, NULL);
+	pwm[0] = pwm_init(0);
 	CONFIG_ASSERT(pwm[0] != NULL);
-	pwm[1] = pwm_init(2, NULL);
+	pwm[1] = pwm_init(2);
 	CONFIG_ASSERT(pwm[1] != NULL);
-	pwm[2] = pwm_init(1, NULL);
+	pwm[2] = pwm_init(1);
 	CONFIG_ASSERT(pwm[2] != NULL);
 
 	n = 10000;
@@ -121,7 +121,7 @@ int32_t pwmtest_init() {
 #else
 	{
 		struct rc *rc = rc_init(ftm_capture);
-		struct capture *cap = capture_init(2, NULL);
+		struct capture *cap = capture_init(2);
 		CONFIG_ASSERT(cap != NULL);
 		ret = rc_setup(rc, cap);
 		CONFIG_ASSERT(ret >= 0);

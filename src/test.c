@@ -246,7 +246,7 @@ int main() {
 #if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
 	ftm = timer_init(1, 32, 20000, 700);
 	CONFIG_ASSERT(ftm != NULL);
-	pwm = pwm_init(3, NULL); 
+	pwm = pwm_init(3); 
 	CONFIG_ASSERT(pwm != NULL);
 	ret = pwm_setPeriod(pwm, 24000);
 	CONFIG_ASSERT(ret == 0);
