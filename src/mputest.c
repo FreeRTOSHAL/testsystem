@@ -27,6 +27,7 @@ void mputest_initTask(void *data) {
 	struct spi *spi;
 	struct mpu9250 *mpu;
 	struct accel *accel;
+	struct gyro *gyro;
 	struct spi_slave *slave[3];
 	{
 		struct spi_opt opt = {
@@ -59,6 +60,8 @@ void mputest_initTask(void *data) {
 	CONFIG_ASSERT(mpu != NULL);
 	accel = accel_init(0);
 	CONFIG_ASSERT(accel != NULL);
+	gyro = gyro_init(0);
+	CONFIG_ASSERT(gyro != NULL);
 	xTaskCreate(mputest_task, "MPU Task", 1024, mpu, 1, NULL);
 	vTaskSuspend(NULL);
 }
