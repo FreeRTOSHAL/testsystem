@@ -21,9 +21,12 @@ void mputest_task(void *data) {
 	}
 }
 
+MPU9250_ADDDEV(mpu0, 1, 0, SPI_OPT_GPIO_DIS, 500000);
+
 void mputest_initTask(void *data) {
 	struct spi *spi;
 	struct mpu9250 *mpu;
+	struct accel *accel;
 	struct spi_slave *slave[3];
 	{
 		struct spi_opt opt = {
@@ -41,8 +44,8 @@ void mputest_initTask(void *data) {
 		};
 		spi = spi_init(1, SPI_3WIRE_CS, NULL);
 		CONFIG_ASSERT(spi != NULL);
-		slave[0] = spiSlave_init(spi, &opt);
-		CONFIG_ASSERT(slave[0] != NULL);
+		/*slave[0] = spiSlave_init(spi, &opt);
+		CONFIG_ASSERT(slave[0] != NULL);*/ /* Init by Driver*/
 		opt.cs_hold = 6;
 		opt.cs_delay = 8;
 		opt.cs = 1;
@@ -52,8 +55,10 @@ void mputest_initTask(void *data) {
 		slave[2] = spiSlave_init(spi, &opt);
 		CONFIG_ASSERT(slave[2] != NULL);
 	}
-	mpu = mpu9250_init(slave[0], portMAX_DELAY);
+	mpu = mpu9250_init(0, portMAX_DELAY);
 	CONFIG_ASSERT(mpu != NULL);
+	accel = accel_init(0);
+	CONFIG_ASSERT(accel != NULL);
 	xTaskCreate(mputest_task, "MPU Task", 1024, mpu, 1, NULL);
 	vTaskSuspend(NULL);
 }
