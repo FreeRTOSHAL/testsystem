@@ -11,7 +11,7 @@ void adctestTask(void *data) {
 	int32_t val;
 	float vin;
 	for (;;) {
-		val = adc_get(adc, 0, portMAX_DELAY);
+		val = adc_get(adc, portMAX_DELAY);
 		CONFIG_ASSERT(val >= 0);
 		vin = ((float) val) * (3.3 / 4096.) * 10.;
 		printf("VIN: %f V\n", vin);
@@ -20,8 +20,7 @@ void adctestTask(void *data) {
 }
 
 int32_t adctest_init() {
-	int32_t ret;
-	struct adc *adc = adc_init(1, 12, 4125000);
+	struct adc *adc = adc_init(0, 12, 4125000);
 	/*struct adc *adc = adc_init(1, 12, 40000000);*/ /* DIV = 1 */
 	/*struct adc *adc = adc_init(1, 12, 13200000);*/ /* DIV = 5 ~ 4 */
 	/*struct adc *adc = adc_init(1, 12, 9428571);*/ /* DIV = 7 ~ 8 */
@@ -31,8 +30,6 @@ int32_t adctest_init() {
 
 
 	CONFIG_ASSERT(adc != NULL);
-	ret = adc_channel(adc, 0);
-	CONFIG_ASSERT(ret >= 0);
 	xTaskCreate(adctestTask, "ADC Test Task", 512, adc, 1, NULL);
 	return 0;
 }
