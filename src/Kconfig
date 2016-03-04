@@ -75,4 +75,9 @@ config UARTTEST
 	depends on UART
 	help 
 		UART Test Tasks
+config LINUX_CON
+	bool "Add Linux Copter Connection Task"
+	depends on BUFFER
+	help
+		Linux Copter Connection
 endmenu

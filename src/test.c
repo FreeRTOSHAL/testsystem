@@ -22,6 +22,7 @@
 #include <mputest.h>
 #include <adctest.h>
 #include <tpstest.h>
+#include <linux_client.h>
 
 static struct gpio *gpio = NULL;
 
@@ -274,6 +275,11 @@ int main() {
 #endif
 #ifdef CONFIG_UARTTEST
 	uarttest_init();
+#endif
+#ifdef CONFIG_LINUX_CON
+	{
+		struct lc *lc = lc_init();
+	}
 #endif
 	printf("Start Scheduler\n");
 	vTaskStartScheduler ();

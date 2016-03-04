@@ -10,3 +10,4 @@ obj-$(CONFIG_SPITEST) += spitest.o
 obj-$(CONFIG_MPUTEST) += mputest.o
 obj-$(CONFIG_ADCTEST) += adctest.o
 obj-$(CONFIG_TPSTEST) += tpstest.o
+obj-$(CONFIG_LINUX_CON) += linux_client.o
