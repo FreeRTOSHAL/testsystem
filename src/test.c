@@ -34,7 +34,7 @@ static struct gpio_pin *pinPTA19 = NULL;
 static struct gpio_pin *pinPTB17 = NULL;
 
 int32_t initGPIO() {
-	gpio = gpio_init();
+	gpio = gpio_init(0);
 	if (gpio == NULL) {
 		return -1;
 	}
