@@ -80,4 +80,14 @@ config LINUX_CON
 	depends on BUFFER
 	help
 		Linux Copter Connection
+config SPEEDTEST
+	bool "Speed Test"
+	select USE_TASK_NOTIFICATIONS
+	select INCLUDE_vTaskSuspend
+	select INCLUDE_xTaskResumeFromISR
+	select USE_TIMERS
+	select INCLUDE_xTimerPendFunctionCall
+	select INCLUDE_xEventGroupSetBitFromISR
+	help
+		Interupt Respone Speed Test
 endmenu

@@ -23,6 +23,7 @@
 #include <adctest.h>
 #include <tpstest.h>
 #include <linux_client.h>
+#include <speedtest.h>
 
 static struct gpio *gpio = NULL;
 
@@ -280,6 +281,9 @@ int main() {
 	{
 		struct lc *lc = lc_init();
 	}
+#endif
+#ifdef CONFIG_SPEEDTEST
+	speedtest_init();
 #endif
 	printf("Start Scheduler\n");
 	vTaskStartScheduler ();
