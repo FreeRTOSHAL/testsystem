@@ -41,15 +41,16 @@ static TaskHandle_t task;
 static SemaphoreHandle_t semaphore;
 static EventGroupHandle_t event;
 static enum tests acutalTest = SEMAPHORE;
-static uint64_t counterValue[END][3];
-static inline uint64_t counterToUS(uint32_t value) {
+static uint32_t counterValue[END][3];
+static float values[END][3];
+static inline float counterToUS(uint64_t value) {
 	/* Too Many Cast for Optimizer do it step by step */
-	uint64_t diff;
-	uint64_t us;
-	uint64_t v = value;
-	uint64_t p = PRESCALER;
-	uint64_t i = 83;
-	uint64_t b = BASETIME;
+	float diff;
+	float us;
+	float v = value;
+	float p = PRESCALER;
+	float i = (166.736842 / 2.);
+	float b = BASETIME;
 	diff = b;
 	diff += ADJUST;
 	
@@ -140,7 +141,7 @@ void speedtest_task(void *data) {
 					int j;
 					for (i = 0; i < END; i++) {
 						for (j = 0; j < 3; j++) {
-							counterValue[i][j] = counterToUS(counterValue[i][j]);
+							values[i][j] = counterToUS(counterValue[i][j]);
 						}
 					}
 				}

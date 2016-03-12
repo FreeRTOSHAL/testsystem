@@ -15,10 +15,10 @@ void spiTask(void *data) {
 			uint16_t recvData[] = {0x4243, 0x4445};
 			int32_t ret;
 			printf("MCU Test\n");
-			ret = spi_sendRecv(slave[0], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transver(slave[0], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
-			ret = spi_sendRecv(slave[0], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transver(slave[0], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
 		}
@@ -29,10 +29,10 @@ void spiTask(void *data) {
 			uint16_t recvData[] = {0x4243, 0x4445};
 			int32_t ret;
 			printf("LSM330DLC Test\n");
-			ret = spi_sendRecv(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transver(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
-			ret = spi_sendRecv(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transver(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
 		}
@@ -42,10 +42,10 @@ void spiTask(void *data) {
 			uint16_t recvData[] = {0x4243, 0x4445};
 			int32_t ret;
 			printf("LSM330DLC 2 Test\n");
-			ret = spi_sendRecv(slave[2], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transver(slave[2], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
-			ret = spi_sendRecv(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transver(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
 		}
@@ -58,7 +58,7 @@ void spitest_init() {
 #if 1
 	struct spi *spi;
 	static struct spi_slave *slave[3];
-	struct spi_ops ops = {
+	struct spi_opt opt = {
 		.lsb = false,
 		.cpol = false,
 		.cpha = false,
@@ -71,17 +71,17 @@ void spitest_init() {
 		.cs_delay = 500,
 		.bautrate = 500000,
 	};
-	spi = spi_init(1);
+	spi = spi_init(1, SPI_3WIRE_CS, NULL);
 	CONFIG_ASSERT(spi != NULL);
-	slave[0] = spi_slave(spi, &ops);
+	slave[0] = spiSlave_init(spi, &opt);
 	CONFIG_ASSERT(slave[0] != NULL);
-	ops.cs_hold = 6;
-	ops.cs_delay = 8;
-	ops.cs = 1;
-	slave[1] = spi_slave(spi, &ops);
+	opt.cs_hold = 6;
+	opt.cs_delay = 8;
+	opt.cs = 1;
+	slave[1] = spiSlave_init(spi, &opt);
 	CONFIG_ASSERT(slave[1] != NULL);
-	ops.cs = 2;
-	slave[2] = spi_slave(spi, &ops);
+	opt.cs = 2;
+	slave[2] = spiSlave_init(spi, &opt);
 	CONFIG_ASSERT(slave[2] != NULL);
 #else
 	struct spi *spi;
