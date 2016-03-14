@@ -7,6 +7,7 @@
 #include <iomux.h>
 #include <uart.h>
 #include <newlib_stub.h>
+#include <nlibc_stub.h>
 #include <buffertest.h>
 #include <irq.h>
 #include <vfxxx_irqtest.h>
@@ -231,6 +232,10 @@ int main() {
 #endif
 #ifdef CONFIG_NEWLIB
 	ret = newlib_init(uart, uart);
+	CONFIG_ASSERT(ret == 0);
+#endif
+#ifdef CONFIG_NLIBC_PRINTF
+	ret = nlibc_init(uart, uart);
 	CONFIG_ASSERT(ret == 0);
 #endif
 	printf("Init Devices\n");
