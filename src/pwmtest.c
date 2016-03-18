@@ -8,9 +8,9 @@
 
 static int32_t n = 0;
 bool crit = false;
+struct pwm *pwm[3];
 
 void pwmTask(void *data) {
-	struct pwm **pwm = data;
 	int32_t ret;
 	bool up = true;
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
@@ -84,7 +84,6 @@ int32_t pwmtest_init() {
 	int32_t ret;
 	struct timer *ftm_capture = timer_init(1, 32, 20000, 700);
 	struct timer *ftm = timer_init(0, 32, 20000, 700);
-	struct pwm *pwm[3];
 	if (ftm == NULL) {
 		return -1;
 	}
@@ -130,6 +129,6 @@ int32_t pwmtest_init() {
 #endif
 
 
-	xTaskCreate(pwmTask, "PWM Task", 512, ftm, 1, NULL);
+	xTaskCreate(pwmTask, "PWM Task", 512, NULL, 1, NULL);
 	return 0;
 }

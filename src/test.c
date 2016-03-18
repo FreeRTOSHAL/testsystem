@@ -37,8 +37,14 @@ static struct gpio_pin *pinPTA19 = NULL;
 static struct gpio_pin *pinPTB17 = NULL;
 
 int32_t initGPIO() {
+	struct gpio *gpio2;
 	gpio = gpio_init(0);
 	if (gpio == NULL) {
+		return -1;
+	}
+	/* Test if GET Dev work */
+	gpio2  = gpio_init(1);
+	if (gpio2 != NULL) {
 		return -1;
 	}
 #ifndef CONFIG_PWM_TEST
