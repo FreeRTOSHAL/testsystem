@@ -244,6 +244,9 @@ int main() {
 	ret = nlibc_init(uart, uart);
 	CONFIG_ASSERT(ret == 0);
 #endif
+#ifdef CONFIG_INSTANCE_NAME
+	hal_printNames();
+#endif
 	printf("Init Devices\n");
 #ifdef CONFIG_GPIO
 	ret = initGPIO();
