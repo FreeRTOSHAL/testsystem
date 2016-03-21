@@ -29,6 +29,15 @@
 #include <timer.h>
 #include <pwm.h>
 #include <gpio.h>
+#include <math.h>
+#undef CONFIG_ASSERT
+# define CONFIG_ASSERT(x) \
+	do{ \
+		if(__builtin_expect(!(x), 0)) { \
+			portDISABLE_INTERRUPTS(); \
+			for(;;); \
+		} \
+	}while(0)
 #if 0
 #define WAITTIME (2000 / portTICK_PERIOD_MS)
 #define PWMTIME 500000
@@ -44,6 +53,7 @@
 #endif
 
 #define DUTY_CYCLE (PWMTIME >> 1)
+#define ITERATION 1000
 
 #define GETTIME() *((volatile uint32_t *) 0x40038004)
 
@@ -54,6 +64,8 @@ enum tests {
 	TASK_SUSPEND,
 	END,
 };
+uint32_t counterValue[END][3];
+enum tests acutalTest = SEMAPHORE;
 
 static struct timer *timer;
 static struct pwm *pwm;
@@ -62,9 +74,11 @@ static struct gpio_pin *pin;
 static TaskHandle_t task;
 static SemaphoreHandle_t semaphore;
 static EventGroupHandle_t event;
-static enum tests acutalTest = SEMAPHORE;
-static uint32_t counterValue[END][3];
-static float values[END][3];
+static float values[ITERATION][END][3];
+static float value[END][3];
+static float min[END][3];
+static float max[END][3];
+static uint32_t iteration = 0;
 static inline float counterToUS(uint64_t value) {
 	/* Too Many Cast for Optimizer do it step by step */
 	float diff;
@@ -163,11 +177,45 @@ void speedtest_task(void *data) {
 					int j;
 					for (i = 0; i < END; i++) {
 						for (j = 0; j < 3; j++) {
-							values[i][j] = counterToUS(counterValue[i][j]);
+							values[iteration][i][j] = counterToUS(counterValue[i][j]);
 						}
 					}
 				}
-				CONFIG_ASSERT(0); /* End Test */
+				if (iteration > ITERATION) {
+					volatile int i;
+					volatile int j;
+					volatile int k;
+					for (i = 0; i < END; i++) {
+						for (j = 0; j < 3; j++) {
+							value[i][j] = 0;
+							max[i][j] = -INFINITY;
+							min[i][j] = +INFINITY;
+						}
+					}
+					for (k = 0; k < ITERATION; k++) {
+						for (i = 0; i < END; i++) {
+							for (j = 0; j < 3; j++) {
+								CONFIG_ASSERT(values[k][i][j] != 0);
+								if (values[k][i][j] > max[i][j]) {
+									max[i][j] = values[k][i][j];
+								}
+								if (values[k][i][j] < min[i][j]) {
+									min[i][j] = values[k][i][j];
+								}
+								value[i][j] += values[k][i][j];
+							}
+						}
+					}
+					for (i = 0; i < END; i++) {
+						for (j = 0; j < 3; j++) {
+							value[i][j] /= ITERATION;
+						}
+					}
+					CONFIG_ASSERT(0);
+					for(;;); /* End Test */
+				}
+				iteration++;
+				acutalTest = SEMAPHORE;
 				break;
 			default:
 				CONFIG_ASSERT(0); /* Not Defined */
@@ -196,7 +244,7 @@ void speedtest_init() {
 	ret = pwm_setDutyCycle(pwm, 0);
 	CONFIG_ASSERT(ret == 0);
 
-	xTaskCreate(speedtest_task, "SpeedTestTask", 500, NULL, 2, &task);
+	xTaskCreate(speedtest_task, "SpeedTestTask", 500, NULL, 4, &task);
 	vSemaphoreCreateBinary(semaphore);
 	CONFIG_ASSERT(semaphore != NULL);
 	xSemaphoreGive(semaphore);
