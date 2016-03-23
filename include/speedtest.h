@@ -20,7 +20,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  */
-#ifndef VFXXX_IRQTEST
-#define VFXXX_IRQTEST
-int32_t irqtest_init();
-#endif
+#ifndef SPEEDTEST_H_
+#define SPEEDTEST_H_
+void speedtest_init();
+#endif 

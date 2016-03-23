@@ -11,3 +11,4 @@ obj-$(CONFIG_MPUTEST) += mputest.o
 obj-$(CONFIG_ADCTEST) += adctest.o
 obj-$(CONFIG_TPSTEST) += tpstest.o
 obj-$(CONFIG_LINUX_CON) += linux_client.o
+obj-$(CONFIG_SPEEDTEST) += speedtest.o
