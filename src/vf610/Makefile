@@ -1,0 +1,14 @@
+obj-y += test.o
+obj-$(CONFIG_IRQTEST) += vfxxx_irqtest.o
+obj-$(CONFIG_BUFFERTEST) += buffertest.o
+obj-$(CONFIG_TIMER_TEST) += timer.o
+obj-$(CONFIG_PPM) += ppm.o
+obj-$(CONFIG_PWM_TEST) += pwmtest.o
+obj-$(CONFIG_RC) += remote_control.o
+obj-$(CONFIG_RCTEST) += rctest.o
+obj-$(CONFIG_SPITEST) += spitest.o
+obj-$(CONFIG_MPUTEST) += mputest.o
+obj-$(CONFIG_ADCTEST) += adctest.o
+obj-$(CONFIG_TPSTEST) += tpstest.o
+obj-$(CONFIG_LINUX_CON) += linux_client.o
+obj-$(CONFIG_SPEEDTEST) += speedtest.o

@@ -169,12 +169,14 @@ void testTask3(void *data) {
 	}
 }
 
-#ifdef CONFIG_FLEXTIMER
+#if defined(CONFIG_GPIO) || defined(CONFIG_PWM)
 void ledTask(void *data) {
-	int32_t ret;
 	bool up = true;
 	uint64_t n = 10000;
+# ifdef CONFIG_PWM
 	struct pwm *pwm = data;
+	int32_t ret;
+# endif
 	TickType_t waittime = 20;
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
@@ -189,8 +191,10 @@ void ledTask(void *data) {
 			}
 			n-=400;
 		}
+# ifdef CONFIG_PWM
 		ret = pwm_setDutyCycle(pwm, n);
 		CONFIG_ASSERT(ret == 0);
+# endif
 		if (n == 0 || n == 20000) {
 			waittime = 1000;
 # ifdef CONFIG_GPIO
@@ -253,8 +257,8 @@ int main() {
 	CONFIG_ASSERT(ret == 0);
 #if !defined(CONFIG_PWM_TEST) && defined(CONFIG_FLEXTIMER)
 	struct timer *ftm;
-	struct pwm *pwm;
 #endif
+	struct pwm *pwm = NULL;
 #ifdef CONFIG_UART
 	struct uart *uart = uart_init(1, 115200);
 #endif
@@ -304,12 +308,14 @@ int main() {
 	CONFIG_ASSERT(ret == 0);
 	ret = pwm_setDutyCycle(pwm, 10000);
 	CONFIG_ASSERT(ret == 0);
-	xTaskCreate(ledTask, "LED Task", 128, pwm, 1, NULL);
 #ifdef CONFIG_RCTEST
 	rcInit(ftm);
 #endif
 #endif
-#ifdef CONFIG_USE_STATS_FORMATTING_FUNCS
+#if defined(CONFIG_GPIO) || defined(CONFIG_PWM)
+	xTaskCreate(ledTask, "LED Task", 128, pwm, 1, NULL);
+#endif
+#ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	xTaskCreate(taskManTask, "Task Manager Task", 512, NULL, 1, NULL);
 #endif
 #ifdef CONFIG_SPITEST
