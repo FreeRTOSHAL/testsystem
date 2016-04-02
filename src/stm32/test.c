@@ -26,6 +26,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <gpio.h>
+#include <devs.h>
 #include <iomux.h>
 #include <uart.h>
 #include <newlib_stub.h>
@@ -50,7 +51,7 @@ bool nucleo_userButtonISR(struct gpio_pin *pin, uint8_t pinID, void *data) {
 
 int32_t initGPIO() {
 	struct gpio *gpio2;
-	gpio = gpio_init(0);
+	gpio = gpio_init(GPIO_ID);
 	if (gpio == NULL) {
 		return -1;
 	}
@@ -163,7 +164,7 @@ int main() {
 	CONFIG_ASSERT(ret == 0);
 	struct pwm *pwm = NULL;
 #ifdef CONFIG_UART
-	struct uart *uart = uart_init(1, 115200);
+	struct uart *uart = uart_init(UART2_ID, 115200);
 #endif
 #ifdef CONFIG_NEWLIB
 	ret = newlib_init(uart, uart);
