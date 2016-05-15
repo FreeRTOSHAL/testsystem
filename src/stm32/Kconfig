@@ -1,0 +1,17 @@
+menu "Application Config"
+config APP_INCLUDE
+	string
+	default "-Iinclude/stm32"
+config TIMERTEST
+	bool "Timer Test"
+	default n
+	depends on TIMER
+	help
+		Timer test
+config SDTEST
+	bool "SD Test"
+	default n
+	depends on SD
+	help 
+		SD Test
+endmenu
