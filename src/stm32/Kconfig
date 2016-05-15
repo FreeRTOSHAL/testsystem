@@ -8,4 +8,10 @@ config TIMERTEST
 	depends on TIMER
 	help
 		Timer test
+config SDTEST
+	bool "SD Test"
+	default n
+	depends on SD
+	help 
+		SD Test
 endmenu

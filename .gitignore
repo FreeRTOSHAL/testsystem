@@ -7,3 +7,6 @@ include/config
 include/generated
 test
 test.bin
+docu/html
+docu/latex
+docu/man

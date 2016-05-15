@@ -35,6 +35,12 @@
 #include <timer.h>
 #include <pwm.h>
 #include <timertest.h>
+#include <sdtest.h>
+#if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
+# define PRINTF(...) printf(__VA_ARGS__)
+#else
+# define PRINTF(...) 
+#endif
 
 #ifdef CONFIG_GPIO
 static struct gpio *gpio = NULL;
@@ -45,7 +51,7 @@ bool nucleo_userButtonISR(struct gpio_pin *pin, uint8_t pinID, void *data) {
 	(void) pin;
 	(void) pinID;
 	(void) data;
-	printf("User Button pressed\n");
+	PRINTF("User Button pressed\n");
 	return false;
 }
 
@@ -99,7 +105,7 @@ void vApplicationStackOverflowHook() {
 void vApplicationIdleHook( void ) {
 }
 
-#if defined(CONFIG_GPIO) || defined(CONFIG_PWM)
+#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
 void ledTask(void *data) {
 	bool up = true;
 	uint64_t n = 10000;
@@ -144,15 +150,15 @@ void taskManTask(void *data) {
 	static char taskBuff[5 * 1024];
 	for(;;) {
 		vTaskList(taskBuff);
-		printf("name\t\tState\tPrio\tStack\tTaskNr.\n");
-		printf("%s", taskBuff);
-		printf("blocked ('B'), ready ('R'), deleted ('D') or suspended ('S')\n");
+		PRINTF("name\t\tState\tPrio\tStack\tTaskNr.\n");
+		PRINTF("%s", taskBuff);
+		PRINTF("blocked ('B'), ready ('R'), deleted ('D') or suspended ('S')\n");
 #ifdef CONFIG_GENERATE_RUN_TIME_STATS
-		printf("name\t\tTime\t\t%%\n");
+		PRINTF("name\t\tTime\t\t%%\n");
 		vTaskGetRunTimeStats(taskBuff);
-		printf("%s", taskBuff);
+		PRINTF("%s", taskBuff);
 #endif
-		printf("\n");
+		PRINTF("\n");
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
@@ -162,9 +168,12 @@ int main() {
 	int32_t ret;
 	ret = irq_init();
 	CONFIG_ASSERT(ret == 0);
+#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
 	struct pwm *pwm = NULL;
+#endif
 #ifdef CONFIG_UART
-	struct uart *uart = uart_init(UART2_ID, 115200);
+	//struct uart *uart = uart_init(UART2_ID, 115200);
+	struct uart *uart = uart_init(UART1_ID, 115200);
 #endif
 #ifdef CONFIG_NEWLIB
 	ret = newlib_init(uart, uart);
@@ -174,7 +183,7 @@ int main() {
 	ret = nlibc_init(uart, uart);
 	CONFIG_ASSERT(ret == 0);
 #endif
-	printf("Init Devices\n");
+	PRINTF("Init Devices\n");
 #ifdef CONFIG_INSTANCE_NAME
 	hal_printNames();
 #endif
@@ -182,7 +191,7 @@ int main() {
 	ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
 #endif
-#if defined(CONFIG_GPIO) || defined(CONFIG_PWM)
+#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
 	xTaskCreate(ledTask, "LED Task", 128, pwm, 1, NULL);
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
@@ -191,7 +200,10 @@ int main() {
 #ifdef CONFIG_TIMERTEST
 	timertest_init();
 #endif
-	printf("Start Scheduler\n");
+#ifdef CONFIG_SDTEST
+	sdtest_init();
+#endif
+	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
 	for(;;);
 	return 0;

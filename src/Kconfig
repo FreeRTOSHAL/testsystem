@@ -1,8 +1,6 @@
-menu "Application Config"
 if MACH_VF610=y
 source src/vf610/Kconfig
 endif
 if MACH_STM32=y
 source src/stm32/Kconfig
 endif
-endmenu
