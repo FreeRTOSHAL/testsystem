@@ -7,6 +7,13 @@ FreeRTOS, FreeRTOS.org and the FreeRTOS logo are trademarks of Real Time Enginee
 
 This is a unofficial Repo of FreeRTOS. This part of the FreeRTOS HAL develops at UaS RheinMain. 
 
+Needed Buildtools
+-----------------
+
+```sh
+sudo apt-get install gcc gdb make autotools-dev automake libtool git gcc-arm-none-eabi libnewlib-arm-none-eabi libncurses5-dev
+```
+
 Build
 -----
 Clone this repo with git clone --recursive or init submoudle with 'git submoudle init; git submoudle update;'
