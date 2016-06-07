@@ -1,0 +1,11 @@
+menu "Application Config"
+config APP_INCLUDE
+	string
+	default "-Iinclude/lpc8xx"
+config GPIOTEST
+	bool "GPIO Test"
+	default n
+	depends on GPIO
+	help
+		GPIO test
+endmenu

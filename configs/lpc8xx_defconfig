@@ -1,0 +1,164 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# FreeRTOS Configuration
+#
+
+#
+# Architecture Settings
+#
+CONFIG_ARCH_ARM=y
+# CONFIG_ARCH_X86 is not set
+
+#
+# Global Settings
+#
+CONFIG_CPU_CLOCK_BY_INTERFACE=y
+# CONFIG_CPU_CLOCK_BY_DEFINE is not set
+
+#
+# Architecture Settings
+#
+# CONFIG_ARCH_ARM_CORTEX_M0 is not set
+CONFIG_ARCH_ARM_CORTEX_M0PLUS=y
+# CONFIG_ARCH_ARM_CORTEX_M3 is not set
+# CONFIG_ARCH_ARM_CORTEX_M4F is not set
+
+#
+# Cortex-M0 Settings
+#
+CONFIG_ARCH_INCLUDE="-Iarch/arm/cortex-m0 -Iarch/arm/include"
+CONFIG_ARCH_CFLAGS="-mthumb -mcpu=cortex-m0plus -march=armv6-m -mtune=cortex-m0plus"
+CONFIG_ARCH_AFLAGS="-mthumb -mcpu=cortex-m0plus -march=armv6-m -mtune=cortex-m0plus"
+CONFIG_ARCH_LDFLAGS=""
+
+#
+# Mach Settings
+#
+CONFIG_MACH_LPC8XX=y
+CONFIG_MACH_INIT_STACK_SIZE=150
+CONFIG_MACH_LD_SCRIPT="mach/lpc8xx/lpc8xx.lds"
+CONFIG_MACH_INCLUDE="-Imach/lpc8xx/include"
+CONFIG_MACH_DEFINE_HEAP=y
+CONFIG_MACH_HAS_GPIO=y
+CONFIG_MACH_HAS_NEWLIB=y
+CONFIG_MACH_HAS_NVIC=y
+
+#
+# VF610 Settings
+#
+CONFIG_LPC_PLL=y
+CONFIG_LPC_QUARZ=12000
+CONFIG_LPC_SPEED=24000
+CONFIG_LPC_GPIO=y
+
+#
+# Driver
+#
+
+#
+# Generic Driver Settings
+#
+# CONFIG_INSTANCE_NAME is not set
+CONFIG_GPIO=y
+# CONFIG_GPIO_MULTI is not set
+CONFIG_NEWLIB=y
+# CONFIG_NEWLIB_UART is not set
+CONFIG_NEWLIB_MALLOC=y
+# CONFIG_NEWLIB_MALLOC_THREAD_SAFE is not set
+CONFIG_MALLOC_1=y
+# CONFIG_MALLOC_2 is not set
+# CONFIG_MALLOC_3 is not set
+# CONFIG_SENSOR is not set
+# CONFIG_POWER is not set
+# CONFIG_EXAMPLE is not set
+# CONFIG_NLIBC is not set
+
+#
+# FreeRTOS
+#
+
+#
+# Basic Settings
+#
+# CONFIG_HEAP_1 is not set
+# CONFIG_HEAP_2 is not set
+# CONFIG_HEAP_3 is not set
+CONFIG_HEAP_4=y
+# CONFIG_HEAP_5 is not set
+CONFIG_TOTAL_HEAP_SIZE=5000
+CONFIG_USE_MALLOC_FAILED_HOOK=y
+# CONFIG_INCLUDE_USER_FREERTOS_CONFIG is not set
+CONFIG_ASSERT_DEFAULT=y
+# CONFIG_ASSERT_USER_DEFINED is not set
+# CONFIG_ASSERT_DISABLED is not set
+# CONFIG_USE_16_BIT_TICKS is not set
+CONFIG_TICK_RATE_HZ=1000
+# CONFIG_USE_TRACE_FACILITY is not set
+# CONFIG_USE_LIST_DATA_INTEGRITY_CHECK_BYTES is not set
+# CONFIG_USE_ALTERNATIVE_API is not set
+
+#
+# Task Setting
+#
+CONFIG_MAX_PRIORITIES=5
+CONFIG_MINIMAL_STACK_SIZE=128
+CONFIG_MAX_TASK_NAME_LEN=16
+CONFIG_NUM_THREAD_LOCAL_STORAGE_POINTERS=0
+# CONFIG_USE_IDLE_HOOK is not set
+CONFIG_INCLUDE_vTaskSuspend=y
+# CONFIG_INCLUDE_xTaskResumeFromISR is not set
+CONFIG_USE_PREEMPTION=y
+CONFIG_USE_TIME_SLICING=y
+CONFIG_IDLE_SHOULD_YIELD=y
+# CONFIG_USE_APPLICATION_TASK_TAG is not set
+# CONFIG_USE_NEWLIB_REENTRANT is not set
+# CONFIG_USE_TASK_NOTIFICATIONS is not set
+# CONFIG_CHECK_STACK_OVERFLOW is not set
+# CONFIG_USE_TICK_HOOK is not set
+
+#
+# Function Support
+#
+# CONFIG_INCLUDE_vTaskDelete is not set
+# CONFIG_INCLUDE_xTaskGetIdleTaskHandle is not set
+CONFIG_INCLUDE_vTaskDelay=y
+CONFIG_INCLUDE_vTaskDelayUntil=y
+# CONFIG_INCLUDE_eTaskGetState is not set
+# CONFIG_INCLUDE_uxTaskPriorityGet is not set
+# CONFIG_INCLUDE_vTaskPrioritySet is not set
+# CONFIG_INCLUDE_pcTaskGetTaskName is not set
+# CONFIG_INCLUDE_xTaskGetSchedulerState is not set
+# CONFIG_INCLUDE_xTaskGetCurrentTaskHandle is not set
+
+#
+# Queue Settings
+#
+# CONFIG_USE_QUEUE_SETS is not set
+CONFIG_QUEUE_REGISTRY_SIZE=0
+# CONFIG_USE_MUTEXES is not set
+# CONFIG_USE_COUNTING_SEMAPHORES is not set
+# CONFIG_USE_TIMERS is not set
+# CONFIG_USE_CO_ROUTINES is not set
+
+#
+# Compiler Settings
+#
+CONFIG_CROSS_COMPILE="arm-none-eabi-"
+CONFIG_DEBUG=y
+CONFIG_OPTIMIZATION_O0=y
+# CONFIG_OPTIMIZATION_O1 is not set
+# CONFIG_OPTIMIZATION_O2 is not set
+# CONFIG_OPTIMIZATION_O3 is not set
+# CONFIG_OPTIMIZATION_Ofast is not set
+# CONFIG_OPTIMIZATION_Os is not set
+# CONFIG_REMOVE_UNUSED_SECTIONS is not set
+CONFIG_EXTRA_AFLAGS=""
+CONFIG_EXTRA_CFLAGS=""
+CONFIG_EXTRA_CPPFLAGS=""
+CONFIG_EXTRA_LDFLAGS=""
+CONFIG_APP_INCLUDE="-Iinclude/lpc8xx"
+
+#
+# Application Config
+#
+CONFIG_GPIOTEST=y
