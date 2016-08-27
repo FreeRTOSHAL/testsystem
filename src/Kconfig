@@ -4,3 +4,6 @@ endif
 if MACH_STM32=y
 source src/stm32/Kconfig
 endif
+if MACH_IMX6=y
+source src/imx6/Kconfig
+endif

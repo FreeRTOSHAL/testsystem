@@ -1,0 +1,8 @@
+menu "Application Config"
+config APP_INCLUDE
+	string
+	default "-Iinclude/imx6"
+config MAILBOX_TEST
+	bool "Mailbox Test"
+	default n
+endmenu
