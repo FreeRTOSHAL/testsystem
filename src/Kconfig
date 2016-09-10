@@ -7,3 +7,6 @@ endif
 if MACH_IMX6=y
 source src/imx6/Kconfig
 endif
+if MACH_AM57xx
+source src/am57xx/Kconfig
+endif

@@ -1,0 +1,8 @@
+menu "Application Config"
+config APP_INCLUDE
+	string
+	default "-Iinclude/am57xx"
+config RPROC_TEST
+	bool "Remoteproc Test"
+	default n
+endmenu
