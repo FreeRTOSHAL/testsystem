@@ -5,4 +5,7 @@ config APP_INCLUDE
 config RPROC_TEST
 	bool "Remoteproc Test"
 	default n
+config MAILBOX_TEST
+	bool "Mailbox Test"
+	default n
 endmenu

@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <remoteproc.h>
+#include <remoteproc_mailbox.h>
 #include <devs.h>
 #define SZ_1M (1 * 1024 * 1024)
 #define SZ_2M (2 * 1024 * 1024)
@@ -90,7 +91,10 @@
 #define RESOURCE_TABLE SECTION(".resource_table") USED NO_REORDER
 struct rtable {
 	struct resource_table resource_table;
-	uintptr_t offset[14];
+	uintptr_t offset[15];
+	struct fw_rsc_vdev rpmsg_vdev;
+	struct fw_rsc_vdev_vring rpmsg_vring0;
+	struct fw_rsc_vdev_vring rpmsg_vring1;
 	struct fw_rsc_carveout text_cout;
 	struct fw_rsc_carveout data_cout;
 	struct fw_rsc_carveout ipcdata_cout;
@@ -105,14 +109,12 @@ struct rtable {
 	struct fw_rsc_devmem devmem9;
 	struct fw_rsc_devmem devmem10;
 	struct fw_rsc_devmem devmem11;
-	struct fw_rsc_vdev rpmsg_vdev;
-	struct fw_rsc_vdev_vring rpmsg_vring0;
-	struct fw_rsc_vdev_vring rpmsg_vring1;
+	struct fw_rsc_devmem devmem12;
 } PACKED;
 struct rtable RESOURCE_TABLE rtable = {
 	.resource_table = {
 		.ver = 1,
-		.num = 14,
+		.num = 15,
 	},
 	.offset = {
 		offsetof(struct rtable, rpmsg_vdev),
@@ -129,6 +131,7 @@ struct rtable RESOURCE_TABLE rtable = {
 		offsetof(struct rtable, devmem9),
 		offsetof(struct rtable, devmem10),
 		offsetof(struct rtable, devmem11),
+		offsetof(struct rtable, devmem12),
 	},
 	.rpmsg_vdev = {
 		.type = RSC_VDEV,
@@ -264,6 +267,14 @@ struct rtable RESOURCE_TABLE rtable = {
 		.flags = 0,
 		.name = "IPU_PERIPHERAL_DMM"
 	},
+	.devmem12 = {
+		.type = RSC_DEVMEM,
+		.da = IPU_PERIPHERAL_L4CFG,
+		.pa = L4_PERIPHERAL_L4CFG,
+		.len = SZ_16M,
+		.flags = 0,
+		.name = "IPU_PERIPHERAL_L4CFG"
+	},
 };
 /*void rprocTest_init() {
 	struct rproc *rproc;
@@ -272,3 +283,13 @@ struct rtable RESOURCE_TABLE rtable = {
 	rproc = rproc_init(&rprocMailbox_ops, mbox, (struct resource_table *) &rtable, 1, false);
 	CONFIG_ASSERT(rproc != NULL);
 }*/
+void rprocTest_init() {
+	struct rproc *rproc;
+	struct mailbox *rxmbox = mailbox_init(MAILBOX_ID(5,6));
+	struct mailbox *txmbox = mailbox_init(MAILBOX_ID(5,4));
+	struct rprocMailbox_opt opt = {.rxmbox = rxmbox, .txmbox = txmbox};;
+	CONFIG_ASSERT(rxmbox != NULL);
+	CONFIG_ASSERT(txmbox != NULL);
+	rproc = rproc_init(&rprocMailbox_ops, &opt, (struct resource_table *) &rtable, 1, false);
+	CONFIG_ASSERT(rproc != NULL);
+}

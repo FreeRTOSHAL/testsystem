@@ -34,6 +34,8 @@
 #include <irq.h>
 #include <timer.h>
 #include <pwm.h>
+#include <rproctest.h>
+#include <mailbox_test.h>
 #if defined(CONFIG_NEWLIB_UART) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -185,6 +187,12 @@ int main() {
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	xTaskCreate(taskManTask, "Task Manager Task", 512, NULL, 1, NULL);
+#endif
+#ifdef CONFIG_RPROC_TEST
+	rprocTest_init();
+#endif
+#ifdef CONFIG_MAILBOX_TEST
+	mailbox_test();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
