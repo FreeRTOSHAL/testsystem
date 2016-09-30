@@ -5,4 +5,15 @@ config APP_INCLUDE
 config MAILBOX_TEST
 	bool "Mailbox Test"
 	default n
+config RPROC_TEST
+	bool "Remoteproc Test"
+	default n
+config PHY_TEST
+	bool "Phy Test"
+	depends on !IMX_ENET
+	default n
+config ENET_TEST
+	bool "ENet Test"
+	depends on IMX_ENET
+	default n
 endmenu

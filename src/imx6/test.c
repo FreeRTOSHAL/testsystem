@@ -35,6 +35,10 @@
 #include <timer.h>
 #include <pwm.h>
 #include <mailbox_test.h>
+#include <platform.h>
+#include <rproctest.h>
+#include <phytest.h>
+#include <enettest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -189,6 +193,18 @@ int main() {
 #endif
 #ifdef CONFIG_MAILBOX_TEST
 	mailbox_test();
+#endif
+#ifdef CONFIG_OPEN_AMP
+	platform_init();
+#endif
+#ifdef CONFIG_RPROC_TEST
+	rprocTest_init();
+#endif
+#ifdef CONFIG_PHY_TEST
+	phytest_init();
+#endif
+#ifdef CONFIG_ENET_TEST
+	enettest_init();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();

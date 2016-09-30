@@ -27,7 +27,7 @@ static void mailbox_testTask(void *d) {
 
 void mailbox_test() {
 	BaseType_t ret;
-	rx = mailbox_init(MAILBOX1_ID);
+	rx = mailbox_init(MAILBOX0_ID);
 	CONFIG_ASSERT(rx != NULL);
 	tx = mailbox_init(MAILBOX0_ID);
 	CONFIG_ASSERT(tx != NULL);
