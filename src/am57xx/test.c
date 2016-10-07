@@ -36,6 +36,12 @@
 #include <pwm.h>
 #include <rproctest.h>
 #include <mailbox_test.h>
+#include <boardtest.h>
+#include <remoteproc_trace.h>
+#include <printClockTree.h>
+#include <spitest.h>
+#include <timertest.h>
+#include <mputest.h>
 #if defined(CONFIG_NEWLIB_UART) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -58,22 +64,8 @@ int32_t initGPIO() {
 	if (gpio2 != NULL) {
 		return -1;
 	}
-	userButton = gpioPin_init(gpio, PTC13, GPIO_INPUT, GPIO_OPEN);
-	if (userButton == NULL) {
-		return -1;
-	}
-	{
-		int32_t ret;
-		ret = gpioPin_setCallback(userButton, nucleo_userButtonISR, NULL, GPIO_EITHER);
-		if (ret < 0) {
-			return -1;
-		}
-		ret = gpioPin_enableInterrupt(userButton);
-		if (ret < 0) {
-			return -1;
-		}
-	}
-	ledPin = gpioPin_init(gpio, PTA5, GPIO_OUTPUT, GPIO_PULL_UP);
+	/* Top LED GPIO2_7 error in Beagbeboard Schmatics GPIO2_17 is GPIO2_7 */
+	ledPin = gpioPin_init(gpio, PAD_GPMC_A17, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (ledPin == NULL) {
 		return -1;
 	}
@@ -97,14 +89,10 @@ void vApplicationStackOverflowHook() {
 void vApplicationIdleHook( void ) {
 }
 
-#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
+#if defined(CONFIG_GPIO) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
 void ledTask(void *data) {
 	bool up = true;
 	uint64_t n = 10000;
-# ifdef CONFIG_PWM
-	struct pwm *pwm = data;
-	int32_t ret;
-# endif
 	TickType_t waittime = 20;
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	for(;;) {
@@ -119,15 +107,8 @@ void ledTask(void *data) {
 			}
 			n-=400;
 		}
-# ifdef CONFIG_PWM
-		ret = pwm_setDutyCycle(pwm, n);
-		CONFIG_ASSERT(ret == 0);
-# endif
 		if (n == 0 || n == 20000) {
 			waittime = 1000;
-# ifdef CONFIG_GPIO
-			gpioPin_togglePin(ledPin);
-# endif
 		} else {
 			waittime = 20;
 		}
@@ -160,11 +141,11 @@ int main() {
 	int32_t ret;
 	ret = irq_init();
 	CONFIG_ASSERT(ret == 0);
-#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
+#if defined(CONFIG_GPIO) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
 	struct pwm *pwm = NULL;
 #endif
 #ifdef CONFIG_UART
-	struct uart *uart = uart_init(UART2_ID, 115200);
+	struct uart *uart = uart_init(REMOTEPROC_TRACE_ID(0), 115200);
 #endif
 #ifdef CONFIG_NEWLIB_UART
 	ret = newlib_init(uart, uart);
@@ -178,24 +159,40 @@ int main() {
 #ifdef CONFIG_INSTANCE_NAME
 	hal_printNames();
 #endif
+#ifdef CONFIG_PRINT_CLOCK_TREE
+	printClockTree();
+#endif
 #ifdef CONFIG_GPIO
 	ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
 #endif
-#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
+#if defined(CONFIG_GPIO) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
 	xTaskCreate(ledTask, "LED Task", 128, pwm, 1, NULL);
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	xTaskCreate(taskManTask, "Task Manager Task", 512, NULL, 1, NULL);
 #endif
-#ifdef CONFIG_RPROC_TEST
-	rprocTest_init();
-#endif
 #ifdef CONFIG_MAILBOX_TEST
 	mailbox_test();
 #endif
+#ifdef CONFIG_RPROC_TEST
+	rprocTest_init();
+#endif
+#ifdef CONFIG_BOARD_TEST
+	boardtest_init();
+#endif
+#ifdef CONFIG_SPI_TEST
+	PRINTF("init SPI Test\n");
+	spitest_init();
+#endif
+#ifdef CONFIG_TIMER_TEST
+	timertest_init();
+#endif
+#ifdef CONFIG_MPU_TEST
+	mputest_init();
+#endif
 	PRINTF("Start Scheduler\n");
-	vTaskStartScheduler ();
+	vTaskStartScheduler();
 	for(;;);
 	return 0;
 }

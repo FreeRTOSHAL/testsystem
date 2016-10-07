@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <remoteproc.h>
 #include <remoteproc_mailbox.h>
+#include <remoteproc_trace.h>
 #include <devs.h>
 #define SZ_1M (1 * 1024 * 1024)
 #define SZ_2M (2 * 1024 * 1024)
@@ -91,13 +92,14 @@
 #define RESOURCE_TABLE SECTION(".resource_table") USED NO_REORDER
 struct rtable {
 	struct resource_table resource_table;
-	uintptr_t offset[15];
+	uintptr_t offset[16];
 	struct fw_rsc_vdev rpmsg_vdev;
 	struct fw_rsc_vdev_vring rpmsg_vring0;
 	struct fw_rsc_vdev_vring rpmsg_vring1;
 	struct fw_rsc_carveout text_cout;
 	struct fw_rsc_carveout data_cout;
 	struct fw_rsc_carveout ipcdata_cout;
+	struct fw_rsc_trace trace0;
 	struct fw_rsc_devmem devmem1;
 	struct fw_rsc_devmem devmem2;
 	struct fw_rsc_devmem devmem3;
@@ -111,16 +113,19 @@ struct rtable {
 	struct fw_rsc_devmem devmem11;
 	struct fw_rsc_devmem devmem12;
 } PACKED;
-struct rtable RESOURCE_TABLE rtable = {
+uint8_t tracebuffer[SZ_1M];
+REMOTEPROC_TRACE_ADDDEV(0, tracebuffer, SZ_1M);
+const struct rtable RESOURCE_TABLE rtable = {
 	.resource_table = {
 		.ver = 1,
-		.num = 15,
+		.num = 16,
 	},
 	.offset = {
 		offsetof(struct rtable, rpmsg_vdev),
 		offsetof(struct rtable, text_cout),
 		offsetof(struct rtable, data_cout),
 		offsetof(struct rtable, ipcdata_cout),
+		offsetof(struct rtable, trace0),
 		offsetof(struct rtable, devmem1),
 		offsetof(struct rtable, devmem2),
 		offsetof(struct rtable, devmem3),
@@ -178,6 +183,12 @@ struct rtable RESOURCE_TABLE rtable = {
 		.len = IPU_MEM_IPC_DATA_SIZE,
 		.flags = 0,
 		.name = "IPU_MEM_IPC_DATA",
+	},
+	.trace0 = {
+		.type = RSC_TRACE, 
+		.da = (u32) &tracebuffer,
+		.len = SZ_1M, 
+		.name = "Trace0",
 	},
 	.devmem1 = {
 		.type = RSC_DEVMEM,

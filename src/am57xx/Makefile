@@ -1,3 +1,8 @@
 obj-y += test.o
 obj-$(CONFIG_RPROC_TEST) += rproctest.o
 obj-$(CONFIG_MAILBOX_TEST) += mailbox_test.o
+obj-$(CONFIG_BOARD_TEST) += boardtest.o
+obj-$(CONFIG_PRINT_CLOCK_TREE) += printClockTree.o
+obj-$(CONFIG_SPI_TEST) += spitest.o
+obj-$(CONFIG_TIMER_TEST) += timertest.o
+obj-$(CONFIG_MPU_TEST) += mputest.o

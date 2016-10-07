@@ -8,4 +8,22 @@ config RPROC_TEST
 config MAILBOX_TEST
 	bool "Mailbox Test"
 	default n
+config BOARD_TEST
+	bool "Carolo Cub Board Test"
+	default n
+config PRINT_CLOCK_TREE
+	bool "Print Clock Tree Register"
+	default n
+config SPI_TEST
+	bool "Spi Test"
+	depends on SPI
+	default n
+config TIMER_TEST
+	bool "Timer Test"
+	depends on TIMER
+	default n
+config MPU_TEST
+	bool "MPU Test"
+	depends on MPU9250
+	default n 
 endmenu
