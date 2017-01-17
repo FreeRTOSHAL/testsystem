@@ -7,7 +7,7 @@
 #include <task.h>
 uint32_t pinIds[] = {
 	PAD_XREF_CLK3, /* Servo1 ok */
-	PAD_MCASP1_AXR15, /* Servo2 ok */
+	PAD_GPMC_A13, /*PAD_MCASP1_AXR15,*/ /* Servo2 ok */
 #ifndef CONFIG_TIMER_TEST
 	PAD_MCASP1_AXR13, /* EMPF1 ok */
 #endif
@@ -28,15 +28,28 @@ uint32_t pinIds[] = {
 
 	PAD_VIN1A_D8, /* BLED1 ok */
 	PAD_VIN1A_D11, /* BLED2 ok */
-	/*PAD_VIN1A_D3,*/ /* BLED3 defekt*/
+	PAD_VIN2A_D6, /*PAD_VIN1A_D3,*/ /* BLED3 defekt*/
 
-	/*PAD_VIN1A_D2,*/ /* US1_IN defekt*/
+	PAD_VIN2A_D9, /* BTN1 */
+	PAD_VIN2A_DE0, /* BTN2 */
+	PAD_VIN2A_CLK0, /* BTN3 */
+
+	PAD_GPMC_A17, /* LED TOP */
+
+	PAD_VIN1A_D2, /* US1_IN defekt*/
 	PAD_GPMC_OEN_REN, /* US2_IN ok */
 	PAD_XREF_CLK2, /* US3_IN ok */
-	/*PAD_VIN1B_CLK1,*/ /* US4_IN defekt*/
+	PAD_VIN1B_CLK1, /* US4_IN defekt*/
 
-	PAD_GPIO6_14,
+	/*PAD_GPIO6_14,*/
 	/*PAD_MMC3_DAT3,*/
+
+	PAD_VIN1A_D3, /*PAD_GPMC_CS2,*/ /* PU1*/
+	PAD_MMC3_DAT7, /*PAD_MCASP1_AXR6,*/ /* PU2 */
+	PAD_UART3_RXD, /* PU3 */
+	PAD_MMC3_CMD, /*PAD_VIN1A_D6,*/ /* PU4 */
+	PAD_GPMC_A16, /* PU5 */
+	PAD_MCASP1_AXR3 /* PU6 */
 };
 uint32_t buttonIDs[] = {
 	PAD_VIN2A_D9, /* BTN1 */
