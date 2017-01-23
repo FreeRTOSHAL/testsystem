@@ -26,4 +26,12 @@ config MPU_TEST
 	bool "MPU Test"
 	depends on MPU9250
 	default n 
+config RTC_SOFTWARE_TEST
+	bool "RTC Software Test"
+	depends on RTC_SOFTWARE
+	default n
+config SOFTWARE_CAPTURE_TEST
+	bool "Software Capture Test"
+	depends on CAPTURE_SOFTWARE
+	default n
 endmenu

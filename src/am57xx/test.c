@@ -42,6 +42,8 @@
 #include <spitest.h>
 #include <timertest.h>
 #include <mputest.h>
+#include <rtctest.h>
+#include <softwareCaptureTest.h>
 #if defined(CONFIG_NEWLIB_UART) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -190,6 +192,12 @@ int main() {
 #endif
 #ifdef CONFIG_MPU_TEST
 	mputest_init();
+#endif
+#ifdef CONFIG_RTC_SOFTWARE_TEST
+	rtctest_init();
+#endif
+#ifdef CONFIG_SOFTWARE_CAPTURE_TEST
+	softwareCaptureTest_init();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler();

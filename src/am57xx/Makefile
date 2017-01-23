@@ -6,3 +6,5 @@ obj-$(CONFIG_PRINT_CLOCK_TREE) += printClockTree.o
 obj-$(CONFIG_SPI_TEST) += spitest.o
 obj-$(CONFIG_TIMER_TEST) += timertest.o
 obj-$(CONFIG_MPU_TEST) += mputest.o
+obj-$(CONFIG_RTC_SOFTWARE_TEST) += rtctest.o
+obj-$(CONFIG_SOFTWARE_CAPTURE_TEST) += softwareCaptureTest.o
