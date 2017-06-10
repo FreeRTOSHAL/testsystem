@@ -8,7 +8,7 @@
 #include <devs.h>
 
 bool timer_callback(struct timer *timer, void *data) {
-#ifndef CONFIG_AM57xx_TIMER10_PWM
+#ifndef CONFIG_AM57xx_TIMERTEST_PWM
 	int32_t ret;
 	struct gpio_pin *pin = data;
 	ret = gpioPin_togglePin(pin);

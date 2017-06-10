@@ -24,7 +24,7 @@ static void rtctest_task(void *data) {
 }
 
 void rtctest_init() {
-	timer = timer_init(TIMER2_ID, 1, 1, 0);
+	timer = timer_init(TIMER14_ID, 1, 1, 0);
 	CONFIG_ASSERT(timer);
 	rtc = rtc_init(RTC_SOFTWARE_ID(0));
 	CONFIG_ASSERT(rtc);
