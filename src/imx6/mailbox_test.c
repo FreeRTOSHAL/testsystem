@@ -9,6 +9,7 @@
 
 struct mailbox *rx;
 struct mailbox *tx;
+OS_DEFINE_TASK(task, 512);
 
 static void mailbox_testTask(void *d) {
 	int32_t ret;
@@ -31,7 +32,7 @@ void mailbox_test() {
 	CONFIG_ASSERT(rx != NULL);
 	tx = mailbox_init(MAILBOX0_ID);
 	CONFIG_ASSERT(tx != NULL);
-	ret = xTaskCreate(mailbox_testTask, "Mailbox Test Task", 512, NULL, 1, NULL);
+	ret = OS_CREATE_TASK(mailbox_testTask, "Mailbox Test Task", 512, NULL, 1, task);
 	CONFIG_ASSERT(ret == pdPASS);
 }
 

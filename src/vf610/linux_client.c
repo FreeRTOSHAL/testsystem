@@ -28,6 +28,7 @@
 #include <string.h>
 #include <irq.h>
 #include <buffer.h>
+#include <os.h>
 
 struct lc {
 	bool init;
@@ -51,6 +52,7 @@ void lc_ping(struct lc *lc, struct lc_msg *msg) {
 		printf("Can't not Send");
 	}
 }
+OS_DEFINE_TASK(LCTask, 500);
 struct lc *lc_init(struct motor *motor) {
 	struct lc *lc = &lc0;
 	if (lc->init) {
@@ -74,7 +76,7 @@ struct lc *lc_init(struct motor *motor) {
 	irq_setPrio(0, 0xFF);
 	irq_enable(0);
 #endif
-	xTaskCreate(lcTask, "Linux Client", 500, lc, 2, NULL);
+	OS_CREATE_TASK(lcTask, "Linux Client", 500, lc, 2, LCTask);
 	lc->init = true;
 	lc_registerCallback(lc, LC_TYPE_ACT, lc_ping);
 	return lc;

@@ -75,7 +75,7 @@ void spiTask(void *data) {
 	}
 	vTaskSuspend(NULL);
 }
-
+OS_DEFINE_TASK(taskSPI, 512);
 void spitest_init() {
 #if 1
 	struct spi *spi;
@@ -142,5 +142,5 @@ void spitest_init() {
 	CONFIG_ASSERT(slave[2] != NULL);
 #endif
 
-	xTaskCreate(spiTask, "SPI Test Task", 512, slave, 1, NULL);
+	OS_CREATE_TASK(spiTask, "SPI Test Task", 512, slave, 1, taskSPI);
 }

@@ -101,7 +101,10 @@ void rcTask(void *data) {
 	}
 }
 #endif
-
+#ifdef CONFIG_RC
+OS_DEFINE_TASK(rcTestTask, 512);
+#endif
+OS_DEFINE_TASK(taskPWM, 512);
 int32_t pwmtest_init() {
 	int32_t ret;
 	struct timer *ftm_capture = timer_init(1, 32, 20000, 700);
@@ -146,11 +149,11 @@ int32_t pwmtest_init() {
 		CONFIG_ASSERT(cap != NULL);
 		ret = rc_setup(rc, cap);
 		CONFIG_ASSERT(ret >= 0);
-		xTaskCreate(rcTask, "RC Task", 512, rc, 1, NULL);
+		OS_CREATE_TASK(rcTask, "RC Task", 512, rc, 1, rcTestTask);
 	}
 #endif
 
 
-	xTaskCreate(pwmTask, "PWM Task", 512, NULL, 1, NULL);
+	OS_CREATE_TASK(pwmTask, "PWM Task", 512, NULL, 1, rcTestTask);
 	return 0;
 }

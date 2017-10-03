@@ -46,7 +46,7 @@ void timertest_task(void *data) {
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
-
+OS_DEFINE_TASK(timerTask, 786);
 void timertest_init() {
 	int32_t ret;
 	struct gpio_pin *pin = NULL;
@@ -116,5 +116,6 @@ void timertest_init() {
 		ret = timer_setOverflowCallback(timer[1], timer_callback, pin);
 		CONFIG_ASSERT(ret >= 0);
 	}
-	xTaskCreate(timertest_task, "Timer test task", 786, timer, 1, NULL);
+	ret = OS_CREATE_TASK(timertest_task, "Timer test task", 786, timer, 1, timerTask);
+	CONFIG_ASSERT(ret != pdPASS);
 }

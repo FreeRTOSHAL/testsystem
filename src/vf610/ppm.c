@@ -31,6 +31,7 @@
 
 #include <timer.h>
 #include <ppm.h>
+#include <os.h>
 
 #define PPM_MIN_TIME 500
 #define PPM_MAX_TIME 1500
@@ -53,12 +54,13 @@ struct ppm {
 	struct timer *timer;
 	struct gpio_pin *pin;
 
-	SemaphoreHandle_t sem;
+	OS_DEFINE_SEMARPHORE_BINARAY(sem);
 	uint32_t waittime;
 
 	uint32_t pos;
 	enum ppm_state state;
 	uint32_t sum;
+	OS_DEFINE_TASK(task, 512);
 };
 
 
@@ -205,13 +207,13 @@ struct ppm *ppm_init(uint32_t slots, struct gpio_pin *pin) {
 	}
 	gpioPin_clearPin(pin);
 	
-	ppm->sem = xSemaphoreCreateBinary();
+	ppm->sem = OS_CREATE_SEMARPHORE_BINARAY(ppm->sem);
 	if (ppm->sem == NULL) {
 		goto ppm_init_error_2;
 	}
 	xSemaphoreGive(ppm->sem);
 	xSemaphoreTake(ppm->sem, portMAX_DELAY);
-	xTaskCreate(ppm_task, "PPM Task", 512, ppm, 3, NULL);
+	OS_CREATE_TASK(ppm_task, "PPM Task", 512, ppm, 3, ppm->task);
 
 	{
 		int i = 0;

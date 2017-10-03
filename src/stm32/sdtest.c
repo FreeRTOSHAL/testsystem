@@ -107,7 +107,9 @@ void sdtest_task(void *d) {
 	testReadWrite();
 	vTaskSuspend(NULL);
 }
+OS_DEFINE_TASK(sdTask, 512);
 void sdtest_init() {
+	BaseType_t ret;
 	struct sd_setting setting = {
 		.clock = 400000,
 		.wide = SD_BusWide_1b,
@@ -116,5 +118,6 @@ void sdtest_init() {
 	sd = sd_init(SDIO_ID, &setting);
 	CONFIG_ASSERT(sd != NULL);
 
-	xTaskCreate(sdtest_task, "SD Test Task", 512, NULL, 1, NULL);
+	ret = OS_CREATE_TASK(sdtest_task, "SD Test Task", 512, NULL, 1, sdTask);
+	CONFIG_ASSERT(ret == pdPASS);
 }

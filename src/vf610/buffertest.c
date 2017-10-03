@@ -31,6 +31,7 @@
 #include <buffer.h>
 #define BUFFER_PRV
 #include <buffer_prv.h>
+#include <os.h>
 
 struct buffer *buffer1 = NULL;
 struct buffer *buffer2 = NULL;
@@ -60,34 +61,45 @@ SemaphoreHandle_t firstTest_1 = NULL;
 
 struct buffer *bufferRX;
 struct buffer *bufferTX;
-
+#ifdef CONFIG_BUFFERTEST_SELF
+OS_DEFINE_TASK(buffer1TestTask, 512);
+OS_DEFINE_TASK(buffer2TestTask, 512);
+#endif
+#ifdef CONFIG_BUFFERTEST_IRQ
+OS_DEFINE_TASK(bufferIRQTask, 512);
+#endif
+#ifdef CONFIG_TTY_BUFFERTEST
+OS_DEFINE_TASK(bufferTTYTask, 512);
+#endif
 void bufferInit() {
 #ifdef CONFIG_BUFFERTEST_SELF
 	buffer1 = buffer_init((struct buffer_base *) buffer, 128, sizeof(char), false, 1);
 	CONFIG_ASSERT(buffer1 != NULL);
 	buffer2 = buffer_init((struct buffer_base *) buffer, 128, sizeof(char), true, 1);
 	CONFIG_ASSERT(buffer2 != NULL);
-	xTaskCreate( buffer1Test, "Buffer Test", 512, NULL, 2, NULL);
-	xTaskCreate( buffer2Test, "Buffer 2 Test", 512, NULL, 3, NULL);
+	OS_CREATE_TASK(buffer1Test, "Buffer Test", 512, NULL, 2, buffer1TestTask);
+	OS_CREATE_TASK(buffer2Test, "Buffer 2 Test", 512, NULL, 3, buffer2TestTask);
 #endif
 	bufferRX = buffer_init(BUFFER_UART_RX, 128, sizeof(char), true, 1);
 	CONFIG_ASSERT(bufferRX != NULL);
 	bufferTX = buffer_init(BUFFER_UART_TX, 128, sizeof(char), false, 1);
 	CONFIG_ASSERT(bufferTX != NULL);
 #ifdef CONFIG_BUFFERTEST_IRQ
-	xTaskCreate( bufferIRQTest, "Buffer IRQ Test", 512, NULL, 2, NULL);
+	OS_CREATE_TASK( bufferIRQTest, "Buffer IRQ Test", 512, NULL, 2, bufferIRQTask);
 #endif
 #ifdef CONFIG_TTY_BUFFERTEST
-	xTaskCreate( bufferTTYTest, "Buffer TTY Test", 512, NULL, 2, NULL);
+	OS_CREATE_TASK(bufferTTYTest, "Buffer TTY Test", 512, NULL, 2, bufferTTYTask);
 #endif
 }
 
 #ifdef CONFIG_BUFFERTEST_SELF
+OS_DEFINE_TASK(buffer3TestTask, 512);
+OS_DEFINE_TASK(buffer4TestTask, 512);
 void bufferInit2() {
 	buffer3 = buffer_init((struct buffer_base *) buffer_2, 32, sizeof(struct TestData), false, 1);
 	buffer4 = buffer_init((struct buffer_base *) buffer_2, 32, sizeof(struct TestData), true, 1);
-	xTaskCreate( buffer3Test, "Buffer 3 Test", 512, NULL, 2, NULL);
-	xTaskCreate( buffer4Test, "Buffer 4 Test", 512, NULL, 3, NULL);
+	OS_CREATE_TASK(buffer3Test, "Buffer 3 Test", 512, NULL, 2, buffer3TestTask);
+	OS_CREATE_TASK(buffer4Test, "Buffer 4 Test", 512, NULL, 3, buffer4TestTask);
 }
 
 void buffer1Test(void *data) {

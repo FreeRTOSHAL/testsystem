@@ -133,12 +133,13 @@ void enettest_task(void *data) {
 	for(;;);
 }
 struct mac *enets[2];
+OS_DEFINE_TASK(enetTask, 1000);
 void enettest_init() {
 	BaseType_t ret;
 	enets[0] = mac_init(ENET1_ID);
 	CONFIG_ASSERT(enets[0] != NULL);
 	enets[1] = mac_init(ENET2_ID);
 	CONFIG_ASSERT(enets[0] != NULL);
-	ret = xTaskCreate(enettest_task, "enettest Task", 1000, enets, 2, NULL);
+	ret = OS_CREATE_TASK(enettest_task, "enettest Task", 1000, enets, 2, enetTask);
 	CONFIG_ASSERT(ret == pdPASS);
 }

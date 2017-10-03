@@ -3,6 +3,7 @@
 #include <system.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include <os.h>
 uint32_t *clkreg[] = {
 	(uint32_t *) 0x4a005000,
 	(uint32_t *) 0x4a005040,
@@ -1225,7 +1226,8 @@ void printClock_task(void *data) {
 	}
 	for(;;);
 }
-
+OS_DEFINE_TASK(clockTask, 512);
 void printClockTree() {
-	xTaskCreate(printClock_task, "Print Clock Task", 512, NULL, 1, NULL);
+	BaseType_t ret = OS_CREATE_TASK(printClock_task, "Print Clock Task", 512, NULL, 1, clockTask);
+	CONFIG_ASSERT(ret == pdPASS);
 }

@@ -22,11 +22,13 @@ static void rtctest_task(void *data) {
 		vTaskDelayUntil(&wakeTime, 500 / portTICK_PERIOD_MS);
 	}
 }
-
+OS_DEFINE_TASK(rtctask, 500);
 void rtctest_init() {
+	BaseType_t ret;
 	timer = timer_init(TIMER14_ID, 1, 1, 0);
 	CONFIG_ASSERT(timer);
 	rtc = rtc_init(RTC_SOFTWARE_ID(0));
 	CONFIG_ASSERT(rtc);
-	xTaskCreate(rtctest_task, "RTC TestTask", 500, NULL, 2, NULL);
+	ret = OS_CREATE_TASK(rtctest_task, "RTC TestTask", 500, NULL, 2, rtctask);
+	CONFIG_ASSERT(ret == pdPASS);
 }

@@ -45,7 +45,10 @@ void mputest_task(void *data) {
 
 MPU9250_ADDDEV(mpu0, 1, 0, SPI_OPT_GPIO_DIS, 500000);
 
+OS_DEFINE_TASK(mpuTask, 1024);
+OS_DEFINE_TASK(mpuInitTask, 1024);
 void mputest_initTask(void *data) {
+	BaseType_t ret;
 	struct spi *spi;
 	struct mpu9250 *mpu;
 	struct accel *accel;
@@ -86,10 +89,11 @@ void mputest_initTask(void *data) {
 	CONFIG_ASSERT(accel != NULL);
 	gyro = gyro_init(0);
 	CONFIG_ASSERT(gyro != NULL);
-	xTaskCreate(mputest_task, "MPU Task", 1024, mpu, 1, NULL);
+	ret = OS_CREATE_TASK(mputest_task, "MPU Task", 1024, mpu, 1, mpuTask);
+	CONFIG_ASSERT(ret == pdPASS);
 	vTaskSuspend(NULL);
 }
 
 void mputest_init() {
-	CONFIG_ASSERT(xTaskCreate(mputest_initTask, "MPU Init Task", 1024, NULL, 2, NULL));
+	CONFIG_ASSERT(OS_CREATE_TASK(mputest_initTask, "MPU Init Task", 1024, NULL, 2, mpuInitTask));
 }

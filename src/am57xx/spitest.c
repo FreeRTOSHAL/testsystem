@@ -73,6 +73,7 @@ void spiTask(void *data) {
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
+OS_DEFINE_TASK(SPITask, 512);
 void spitest_init() {
 	struct spi *spi;
 	static struct spi_slave *slave[3];
@@ -106,5 +107,5 @@ void spitest_init() {
 	printf("Init SPI Slave 2\n");
 	slave[2] = spiSlave_init(spi, &opt);
 	CONFIG_ASSERT(slave[2] != NULL);
-	xTaskCreate(spiTask, "SPI Test Task", 512, slave, 1, NULL);
+	OS_CREATE_TASK(spiTask, "SPI Test Task", 512, slave, 1, SPITask);
 }

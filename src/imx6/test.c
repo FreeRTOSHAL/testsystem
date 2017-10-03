@@ -158,7 +158,8 @@ void taskManTask(void *data) {
 	}
 }
 #endif
-
+OS_DEFINE_TASK(taskLED, 128);
+OS_DEFINE_TASK(taskMan, 512);
 int main() {
 	int32_t ret;
 	ret = irq_init();
@@ -186,10 +187,12 @@ int main() {
 	CONFIG_ASSERT(ret == 0);
 #endif
 #if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil)
-	xTaskCreate(ledTask, "LED Task", 128, pwm, 1, NULL);
+	ret = OS_CREATE_TASK(ledTask, "LED Task", 128, pwm, 1, taskLED);
+	CONFIG_ASSERT(ret == pdPASS);
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
-	xTaskCreate(taskManTask, "Task Manager Task", 512, NULL, 1, NULL);
+	ret = OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
+	CONFIG_ASSERT(ret == pdPASS);
 #endif
 #ifdef CONFIG_MAILBOX_TEST
 	mailbox_test();

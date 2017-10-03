@@ -88,7 +88,7 @@ static bool buttonHandler(struct gpio_pin *pin, uint32_t pinID, void *data) {
 	/* TODO */
 	return false;
 }
-
+OS_DEFINE_TASK(boardTask, 512);
 void boardtest_init() {
 	int32_t ret;
 	int32_t i;
@@ -105,5 +105,6 @@ void boardtest_init() {
 		ret = gpioPin_setCallback(buttons[i], buttonHandler, NULL, GPIO_FALLING);
 		CONFIG_ASSERT(ret >= 0);
 	}
-	xTaskCreate(boardtest_task, "Board test task", 512, NULL, 1, NULL);
+	ret = OS_CREATE_TASK(boardtest_task, "Board test task", 512, NULL, 1, boardTask);
+	CONFIG_ASSERT(ret == pdPASS);
 }

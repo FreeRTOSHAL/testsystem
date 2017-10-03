@@ -92,7 +92,7 @@ static void tpstest_task(void *data) {
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
-
+OS_DEFINE_TASK(tpsTask, 512);
 static void tpstest_initTask(void *data) {
 	struct spi *spi;
 	struct spi_opt opt = {
@@ -117,11 +117,11 @@ static void tpstest_initTask(void *data) {
 	CONFIG_ASSERT(tps != NULL);
 	adc = adc_init(1, 12, 4125000);
 	CONFIG_ASSERT(adc != NULL);
-	xTaskCreate(tpstest_task, "TPS Task", 512, NULL, 1, NULL);
+	OS_CREATE_TASK(tpstest_task, "TPS Task", 512, NULL, 1, tpsTask);
 	vTaskSuspend(NULL);
 }
-
+OS_DEFINE_TASK(tpsInitTask, 512);
 int32_t tpstest_init() {
-	xTaskCreate(tpstest_initTask, "TPS Init Task", 512, NULL, 4, NULL);
+	OS_CREATE_TASK(tpstest_initTask, "TPS Init Task", 512, NULL, 4, tpsInitTask);
 	return 0;
 }

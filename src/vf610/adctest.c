@@ -40,7 +40,7 @@ void adctestTask(void *data) {
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
-
+OS_DEFINE_TASK(adcTask, 512);
 int32_t adctest_init() {
 	struct adc *adc = adc_init(0, 12, 4125000);
 	/*struct adc *adc = adc_init(1, 12, 40000000);*/ /* DIV = 1 */
@@ -52,6 +52,6 @@ int32_t adctest_init() {
 
 
 	CONFIG_ASSERT(adc != NULL);
-	xTaskCreate(adctestTask, "ADC Test Task", 512, adc, 1, NULL);
+	OS_CREATE_TASK(adctestTask, "ADC Test Task", 512, adc, 1, adcTask);
 	return 0;
 }

@@ -71,9 +71,9 @@ static struct timer *timer;
 static struct pwm *pwm;
 static struct gpio *gpio;
 static struct gpio_pin *pin;
-static TaskHandle_t task;
-static SemaphoreHandle_t semaphore;
-static EventGroupHandle_t event;
+OS_DEFINE_TASK(task, 500);
+OS_DEFINE_SEMARPHORE_BINARAY(semaphore);
+OS_DEFINE_EVENT_GROUP(event);
 static float values[ITERATION][END][3];
 static float value[END][3];
 static float min[END][3];
@@ -98,7 +98,7 @@ static inline float counterToUS(uint64_t value) {
 
 
 
-static bool interruptHandler(struct gpio_pin *p, uint8_t pinID, void *data) {
+static bool interruptHandler(struct gpio_pin *p, uint32_t pinID, void *data) {
 	BaseType_t pxHigherPriorityTaskWoken;
 	counterValue[acutalTest][1] = GETTIME();
 	switch(acutalTest) {
@@ -244,11 +244,11 @@ void speedtest_init() {
 	ret = pwm_setDutyCycle(pwm, 0);
 	CONFIG_ASSERT(ret == 0);
 
-	xTaskCreate(speedtest_task, "SpeedTestTask", 500, NULL, 4, &task);
-	vSemaphoreCreateBinary(semaphore);
+	OS_CREATE_TASK(speedtest_task, "SpeedTestTask", 500, NULL, 4, task);
+	semaphore = OS_CREATE_SEMARPHORE_BINARAY(semaphore);
 	CONFIG_ASSERT(semaphore != NULL);
 	xSemaphoreGive(semaphore);
 	xSemaphoreTake(semaphore, 0);
-	event = xEventGroupCreate();
+	event = OS_CREATE_EVENT_GROUP(event);
 	CONFIG_ASSERT(event != NULL);
 }

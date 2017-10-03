@@ -24,14 +24,14 @@ static void mailbox_testTask(void *d) {
 		printf("Data sended\n");
 	}
 }
-
+OS_DEFINE_TASK(mailboxTask, 512);
 void mailbox_test() {
 	BaseType_t ret;
 	rx = mailbox_init(MAILBOX_ID(5,2));
 	CONFIG_ASSERT(rx != NULL);
 	tx = mailbox_init(MAILBOX_ID(5,3));
 	CONFIG_ASSERT(tx != NULL);
-	ret = xTaskCreate(mailbox_testTask, "Mailbox Test Task", 512, NULL, 1, NULL);
+	ret = OS_CREATE_TASK(mailbox_testTask, "Mailbox Test Task", 512, NULL, 1, mailboxTask);
 	CONFIG_ASSERT(ret == pdPASS);
 }
 

@@ -33,9 +33,10 @@
 #include <irq.h>
 #include <vector.h>
 #include <semphr.h>
+#include <os.h>
 
 
-SemaphoreHandle_t sem;
+OS_DEFINE_SEMARPHORE_BINARAY(sem);
 void cpu2cpu_int1_isr(void) {
 	BaseType_t xHigherPriorityTaskWoken;
 	xSemaphoreGiveFromISR(sem, &xHigherPriorityTaskWoken);
@@ -43,14 +44,15 @@ void cpu2cpu_int1_isr(void) {
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 void pingTask(void *data);
+OS_DEFINE_TASK(taskPing, 512);
 int32_t irqtest_init() {
-	sem = xSemaphoreCreateBinary();
+	sem = OS_CREATE_SEMARPHORE_BINARAY(sem);
 	if (sem == NULL) {
 		return -1;
 	}
 	xSemaphoreGive(sem);
 	xSemaphoreTake(sem, portMAX_DELAY);
-	xTaskCreate( pingTask, "IRQ Pin Test", 512, NULL, 1, NULL);
+	OS_CREATE_TASK( pingTask, "IRQ Pin Test", 512, NULL, 1, taskPing);
 	return 0;
 }
 void pingTask(void *data) {

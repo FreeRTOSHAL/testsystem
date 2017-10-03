@@ -10,7 +10,7 @@
 #include <devs.h>
 #include <iomux.h>
 ADD_RTC_SOFTWARE(0);
-ADD_CAPUTRE_SOFTWARE(0);
+ADD_CAPTURE_SOFTWARE(0);
 struct capture *capture;
 struct timer *timer;
 struct rtc *rtc;
@@ -39,8 +39,9 @@ static void softwareCaptureTest_task(void *data) {
 	CONFIG_ASSERT(ret >= 0);
 	for (;;) vTaskSuspend(NULL);
 }
-
+OS_DEFINE_TASK(captureTask, 500);
 void softwareCaptureTest_init() {
+	BaseType_t ret;
 	struct gpio *gpio = gpio_init(GPIO_ID);
 	CONFIG_ASSERT(gpio);
 	pin = gpioPin_init(gpio, PAD_MCASP1_AXR13, GPIO_INPUT, GPIO_PULL_DOWN); /* EMPF1 */
@@ -51,5 +52,6 @@ void softwareCaptureTest_init() {
 	CONFIG_ASSERT(rtc);
 	capture = capture_init(CAPTURE_SOFTWARE_ID(0));
 	CONFIG_ASSERT(capture);
-	 xTaskCreate(softwareCaptureTest_task, "Capture TestTask", 500, NULL, 2, NULL);
+	ret = OS_CREATE_TASK(softwareCaptureTest_task, "Capture TestTask", 500, NULL, 2, captureTask);
+	CONFIG_ASSERT(ret == pdPASS);
 }

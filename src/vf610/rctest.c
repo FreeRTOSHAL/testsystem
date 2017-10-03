@@ -44,7 +44,7 @@ void rcTestTask(void *data) {
 		vTaskDelayUntil(&lastWakeUpTime, 10 / portTICK_PERIOD_MS);
 	}
 }
-
+OS_DEFINE_TASK(rcTask, 512);
 void rcInit(struct timer *ftm) {
 	int32_t ret;
 	struct rc *rc = rc_init(ftm);
@@ -73,5 +73,5 @@ void rcInit(struct timer *ftm) {
 	CONFIG_ASSERT(ret >= 0);
 	ret = rc_setup(rc, cap[5]);
 	CONFIG_ASSERT(ret >= 0);
-	xTaskCreate(rcTestTask, "RC Test Task", 512, rc, 1, NULL);
+	OS_CREATE_TASK(rcTestTask, "RC Test Task", 512, rc, 1, rcTask);
 }

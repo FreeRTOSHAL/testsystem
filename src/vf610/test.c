@@ -245,12 +245,16 @@ void uart_test2(void *data) {
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
+OS_DEFINE_TASK(uartTask1, 512);
+OS_DEFINE_TASK(uartTask2, 512);
 void uarttest_init() {
-	xTaskCreate(uart_test1, "UART Test Task 1", 512, NULL, 2, NULL);
-	xTaskCreate(uart_test2, "UART Test Task 2", 512, NULL, 2, NULL);
+	OS_CREATE_TASK(uart_test1, "UART Test Task 1", 512, NULL, 2, uartTask1);
+	OS_CREATE_TASK(uart_test2, "UART Test Task 2", 512, NULL, 2, uartTask2);
 }
 #endif
 
+OS_DEFINE_TASK(taskLED, 128);
+OS_DEFINE_TASK(taskMan, 512);
 int main() {
 	int32_t ret;
 	ret = irq_init();
@@ -313,10 +317,10 @@ int main() {
 #endif
 #endif
 #if defined(CONFIG_GPIO) || defined(CONFIG_PWM)
-	xTaskCreate(ledTask, "LED Task", 128, pwm, 1, NULL);
+	OS_CREATE_TASK(ledTask, "LED Task", 128, pwm, 1, taskLED);
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
-	xTaskCreate(taskManTask, "Task Manager Task", 512, NULL, 1, NULL);
+	OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
 #endif
 #ifdef CONFIG_SPITEST
 	spitest_init();
