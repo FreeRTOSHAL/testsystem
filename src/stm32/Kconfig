@@ -2,16 +2,46 @@ menu "Application Config"
 config APP_INCLUDE
 	string
 	default "-Iinclude/stm32"
-config TIMERTEST
+config TIMER_TEST
 	bool "Timer Test"
-	default n
 	depends on TIMER
+	default n
+choice
+	prompt "stdout UART"
+	depends on UART
 	help
-		Timer test
+		Select default UART
+	config STDOUT_UART1
+		bool "UART 1"
+		depends on STM32_UART_1
+	config STDOUT_UART2
+		bool "UART 2"
+		depends on STM32_UART_2
+	config STDOUT_SEMIHOSTING
+		bool "Semihosting (over JTAG)"
+		select ARCH_ARM_DEBUG
+		select SEMIHOSTING
+		select SEMIHOSTING_UART
+endchoice
+choice
+	prompt "Test Board"
+	config NUCLEO
+		bool "Nucleo"
+	config PHOTON
+		bool "Photon"
+	config DISCOVERY
+		bool "Discovery"
+endchoice
 config SDTEST
 	bool "SD Test"
 	default n
 	depends on SD
 	help 
 		SD Test
+config CAROLO_BOARD_TEST
+	bool "Caolo Board Test"
+	default n
+	depends on GPIO
+	help
+		Carolo Base Board Test
 endmenu
