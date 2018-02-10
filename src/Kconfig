@@ -10,3 +10,6 @@ endif
 if MACH_AM57xx
 source src/am57xx/Kconfig
 endif
+if ARCH_X86_LINUX
+source src/linux/Kconfig
+endif
