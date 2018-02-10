@@ -38,6 +38,7 @@
 #include <sdtest.h>
 #include <semihosting.h>
 #include <boardtest.h>
+#include <spitest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -238,6 +239,9 @@ int main() {
 #endif
 #ifdef CONFIG_CAROLO_BOARD_TEST
 	boardtest_init();
+#endif
+#ifdef CONFIG_SPITEST
+	spi_test();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();

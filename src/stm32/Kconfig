@@ -44,4 +44,8 @@ config CAROLO_BOARD_TEST
 	depends on GPIO
 	help
 		Carolo Base Board Test
+config SPITEST
+	bool "SPI Test"
+	default n
+	depends on SPI
 endmenu
