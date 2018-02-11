@@ -53,6 +53,7 @@
 #define IPU_MEM_DATA            0x80000000
 
 #define IPU_MEM_IPC_DATA        0x9F000000
+#define IPU_MEM_TRACE           0xC0000000
 #define IPU_MEM_IPC_VRING       0x60000000
 #define IPU_MEM_RPMSG_VRING0    0x60000000
 #define IPU_MEM_RPMSG_VRING1    0x60004000
@@ -61,6 +62,7 @@
 
 #define IPU_MEM_IPC_VRING_SIZE  SZ_1M
 #define IPU_MEM_IPC_DATA_SIZE   SZ_1M
+#define IPU_MEM_TRACE_SIZE   (SZ_1M * 2)
 
 #define IPU_MEM_TEXT_SIZE       (SZ_1M * 6)
 
@@ -68,7 +70,7 @@
  * IPU_MEM_DATA_SIZE contains the size of EXT_DATA + EXT_HEAP
  * defined in the dce_ipu.cfg
  */
-#define IPU_MEM_DATA_SIZE       (SZ_1M * 15)
+#define IPU_MEM_DATA_SIZE       (SZ_1M * 14)
 
 /*
  * Assign fixed RAM addresses to facilitate a fixed MMU table.
@@ -92,14 +94,16 @@
 #define RESOURCE_TABLE SECTION(".resource_table") USED NO_REORDER
 struct rtable {
 	struct resource_table resource_table;
-	uintptr_t offset[16];
+	uintptr_t offset[18];
 	struct fw_rsc_vdev rpmsg_vdev;
 	struct fw_rsc_vdev_vring rpmsg_vring0;
 	struct fw_rsc_vdev_vring rpmsg_vring1;
 	struct fw_rsc_carveout text_cout;
 	struct fw_rsc_carveout data_cout;
+	struct fw_rsc_carveout trace_cout;
 	struct fw_rsc_carveout ipcdata_cout;
 	struct fw_rsc_trace trace0;
+	struct fw_rsc_trace trace1;
 	struct fw_rsc_devmem devmem1;
 	struct fw_rsc_devmem devmem2;
 	struct fw_rsc_devmem devmem3;
@@ -113,19 +117,23 @@ struct rtable {
 	struct fw_rsc_devmem devmem11;
 	struct fw_rsc_devmem devmem12;
 } PACKED;
-uint8_t tracebuffer[SZ_1M];
+uint8_t tracebuffer[SZ_1M] SECTION(".trace");
+uint8_t tracebufferCPU1[SZ_1M] SECTION(".trace");
 REMOTEPROC_TRACE_ADDDEV(0, tracebuffer, SZ_1M);
+REMOTEPROC_TRACE_ADDDEV(1, tracebufferCPU1, SZ_1M);
 const struct rtable RESOURCE_TABLE rtable = {
 	.resource_table = {
 		.ver = 1,
-		.num = 16,
+		.num = 18,
 	},
 	.offset = {
 		offsetof(struct rtable, rpmsg_vdev),
 		offsetof(struct rtable, text_cout),
 		offsetof(struct rtable, data_cout),
+		offsetof(struct rtable, trace_cout),
 		offsetof(struct rtable, ipcdata_cout),
 		offsetof(struct rtable, trace0),
+		offsetof(struct rtable, trace1),
 		offsetof(struct rtable, devmem1),
 		offsetof(struct rtable, devmem2),
 		offsetof(struct rtable, devmem3),
@@ -184,11 +192,25 @@ const struct rtable RESOURCE_TABLE rtable = {
 		.flags = 0,
 		.name = "IPU_MEM_IPC_DATA",
 	},
+	.trace_cout = {
+		.type = RSC_CARVEOUT,
+		.da = IPU_MEM_TRACE,
+		.pa = 0x0,
+		.len = IPU_MEM_TRACE_SIZE,
+		.flags = 0,
+		.name = "IPU_MEM_TRACE",
+	},
 	.trace0 = {
 		.type = RSC_TRACE, 
 		.da = (u32) &tracebuffer,
 		.len = SZ_1M, 
 		.name = "Trace0",
+	},
+	.trace1 = {
+		.type = RSC_TRACE, 
+		.da = (u32) &tracebufferCPU1,
+		.len = SZ_1M, 
+		.name = "Trace1",
 	},
 	.devmem1 = {
 		.type = RSC_DEVMEM,
@@ -295,6 +317,7 @@ const struct rtable RESOURCE_TABLE rtable = {
 	CONFIG_ASSERT(rproc != NULL);
 }*/
 void rprocTest_init() {
+#ifdef CONFIG_MACH_AM57xx_IPU_CPU0
 	struct rproc *rproc;
 	struct mailbox *rxmbox = mailbox_init(MAILBOX_ID(5,6));
 	struct mailbox *txmbox = mailbox_init(MAILBOX_ID(5,4));
@@ -303,4 +326,5 @@ void rprocTest_init() {
 	CONFIG_ASSERT(txmbox != NULL);
 	rproc = rproc_init(&rprocMailbox_ops, &opt, (struct resource_table *) &rtable, 1, false);
 	CONFIG_ASSERT(rproc != NULL);
+#endif
 }

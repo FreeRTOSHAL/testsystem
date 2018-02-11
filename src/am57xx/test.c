@@ -56,14 +56,8 @@ static struct gpio *gpio = NULL;
 static struct gpio_pin *ledPin = NULL;
 
 int32_t initGPIO() {
-	struct gpio *gpio2;
 	gpio = gpio_init(GPIO_ID);
 	if (gpio == NULL) {
-		return -1;
-	}
-	/* Test if GET Dev work */
-	gpio2  = gpio_init(1);
-	if (gpio2 != NULL) {
 		return -1;
 	}
 	/* Top LED GPIO2_7 error in Beagbeboard Schmatics GPIO2_17 is GPIO2_7 */
@@ -153,7 +147,12 @@ int main() {
 	struct pwm *pwm = NULL;
 #endif
 #ifdef CONFIG_UART
+# ifdef CONFIG_MACH_AM57xx_IPU_CPU0
 	struct uart *uart = uart_init(REMOTEPROC_TRACE_ID(0), 115200);
+# endif
+# ifdef CONFIG_MACH_AM57xx_IPU_CPU1
+	struct uart *uart = uart_init(REMOTEPROC_TRACE_ID(1), 115200);
+# endif
 #endif
 #ifdef CONFIG_NEWLIB_UART
 	ret = newlib_init(uart, uart);
