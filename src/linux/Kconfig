@@ -1,0 +1,9 @@
+menu "Application Config"
+config APP_INCLUDE
+	string
+	default "-Iinclude/linux"
+config ADC_TEST_TASK
+	bool "ADC Test Task"
+	depends on ADC_TEST
+	default n
+endmenu
