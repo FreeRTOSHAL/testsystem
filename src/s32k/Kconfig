@@ -1,0 +1,16 @@
+menu "Application Config"
+config APP_INCLUDE
+	string
+	default "-Iinclude/s32k"
+choice
+	prompt "stdout UART"
+	depends on UART
+	help
+		Select default UART
+	config S32K_STDOUT_SEMIHOSTING
+		bool "Semihosting (over JTAG)"
+		select ARCH_ARM_DEBUG
+		select SEMIHOSTING
+		select SEMIHOSTING_UART
+endchoice
+endmenu

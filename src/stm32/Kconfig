@@ -11,13 +11,13 @@ choice
 	depends on UART
 	help
 		Select default UART
-	config STDOUT_UART1
+	config STM32_STDOUT_UART1
 		bool "UART 1"
 		depends on STM32_UART_1
-	config STDOUT_UART2
+	config STM32_STDOUT_UART2
 		bool "UART 2"
 		depends on STM32_UART_2
-	config STDOUT_SEMIHOSTING
+	config STM32_STDOUT_SEMIHOSTING
 		bool "Semihosting (over JTAG)"
 		select ARCH_ARM_DEBUG
 		select SEMIHOSTING

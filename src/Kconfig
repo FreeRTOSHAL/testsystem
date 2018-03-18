@@ -13,3 +13,6 @@ endif
 if ARCH_X86_LINUX
 source src/linux/Kconfig
 endif
+if MACH_S32K
+source src/s32k/Kconfig
+endif

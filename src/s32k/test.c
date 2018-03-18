@@ -32,13 +32,7 @@
 #include <newlib_stub.h>
 #include <nlibc_stub.h>
 #include <irq.h>
-#include <timer.h>
-#include <pwm.h>
-#include <timertest.h>
-#include <sdtest.h>
 #include <semihosting.h>
-#include <boardtest.h>
-#include <spitest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -187,13 +181,13 @@ int main() {
 	struct pwm *pwm = NULL;
 #endif
 #ifdef CONFIG_UART
-	#ifdef CONFIG_STM32_STDOUT_UART1
+	#ifdef CONFIG_S32K_STDOUT_UART1
 	struct uart *uart = uart_init(UART1_ID, 115200);
 	#endif
-	#ifdef CONFIG_STM32_STDOUT_UART2
+	#ifdef CONFIG_S32K_STDOUT_UART2
 	struct uart *uart = uart_init(UART2_ID, 115200);
 	#endif
-	#ifdef CONFIG_STM32_STDOUT_SEMIHOSTING
+	#ifdef CONFIG_S32K_STDOUT_SEMIHOSTING
 	struct uart *uart = uart_init(SEMIHOSTING_UART_ID, 115200);
 	#endif
 #endif
@@ -230,6 +224,18 @@ int main() {
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
+#endif
+#ifdef CONFIG_TIMER_TEST
+	timertest_init();
+#endif
+#ifdef CONFIG_SDTEST
+	sdtest_init();
+#endif
+#ifdef CONFIG_CAROLO_BOARD_TEST
+	boardtest_init();
+#endif
+#ifdef CONFIG_SPITEST
+	spi_test();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
