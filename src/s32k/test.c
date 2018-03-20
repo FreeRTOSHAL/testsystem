@@ -203,6 +203,7 @@ int main() {
 #ifdef CONFIG_INSTANCE_NAME
 	hal_printNames();
 #endif
+#if 0
 #ifdef CONFIG_GPIO
 	ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
@@ -222,9 +223,11 @@ int main() {
 #if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil) && !defined(CONFIG_TIMER_TEST)
 	OS_CREATE_TASK(ledTask, "LED Task", 128, pwm, 1, taskLED);
 #endif
+#endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
 #endif
+#if 0
 #ifdef CONFIG_TIMER_TEST
 	timertest_init();
 #endif
@@ -236,6 +239,7 @@ int main() {
 #endif
 #ifdef CONFIG_SPITEST
 	spi_test();
+#endif
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
