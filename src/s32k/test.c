@@ -83,12 +83,7 @@ int32_t initGPIO() {
 			return -1;
 		}
 	}
-#if (defined(CONFIG_NUCLEO) || defined(CONFIG_PHOTON))
-	ledPin = gpioPin_init(gpio, PTA5, GPIO_OUTPUT, GPIO_PULL_UP);
-#endif
-#ifdef CONFIG_DISCOVERY
-	ledPin = gpioPin_init(gpio, PTD14, GPIO_OUTPUT, GPIO_PULL_UP);
-#endif
+	ledPin = gpioPin_init(gpio, PTD15, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (ledPin == NULL) {
 		return -1;
 	}
@@ -203,11 +198,11 @@ int main() {
 #ifdef CONFIG_INSTANCE_NAME
 	hal_printNames();
 #endif
-#if 0
 #ifdef CONFIG_GPIO
-	ret = initGPIO();
+	//ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
 #endif
+#if 0
 #if defined(CONFIG_PWM) && !defined(CONFIG_TIMER_TEST)
 	{
 		struct timer *timer = timer_init(TIMER4_ID, 500, 1, 0);
@@ -220,9 +215,9 @@ int main() {
 		CONFIG_ASSERT(ret == 0);
 	}
 #endif
-#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil) && !defined(CONFIG_TIMER_TEST)
-	OS_CREATE_TASK(ledTask, "LED Task", 128, pwm, 1, taskLED);
 #endif
+#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil) && !defined(CONFIG_TIMER_TEST)
+	//OS_CREATE_TASK(ledTask, "LED Task", 128, pwm, 1, taskLED);
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
