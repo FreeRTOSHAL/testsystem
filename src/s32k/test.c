@@ -63,6 +63,7 @@ int32_t initGPIO() {
 	if (gpio2 != NULL) {
 		return -1;
 	}
+#if 0
 #if (defined(CONFIG_NUCLEO) || defined(CONFIG_PHOTON))
 	userButton = gpioPin_init(gpio, PTC13, GPIO_INPUT, GPIO_OPEN);
 #endif
@@ -83,6 +84,7 @@ int32_t initGPIO() {
 			return -1;
 		}
 	}
+#endif
 	ledPin = gpioPin_init(gpio, PTD15, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (ledPin == NULL) {
 		return -1;
@@ -199,7 +201,7 @@ int main() {
 	hal_printNames();
 #endif
 #ifdef CONFIG_GPIO
-	//ret = initGPIO();
+	ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
 #endif
 #if 0
@@ -217,7 +219,7 @@ int main() {
 #endif
 #endif
 #if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil) && !defined(CONFIG_TIMER_TEST)
-	//OS_CREATE_TASK(ledTask, "LED Task", 128, pwm, 1, taskLED);
+	OS_CREATE_TASK(ledTask, "LED Task", 128, pwm, 1, taskLED);
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
