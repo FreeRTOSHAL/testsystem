@@ -85,8 +85,8 @@ void phytest_task() {
 }
 void phytest_init() {
 	struct clock *clk = clock_init();
-	uint32_t mii_speed = DIV_ROUND_UP(clock_getPeripherySpeed(clk), 5000000) - 1;
-	uint32_t holdtime = DIV_ROUND_UP(clock_getPeripherySpeed(clk), 100000000) - 1;
+	uint32_t mii_speed = DIV_ROUND_UP(clock_getPeripherySpeed(clk, 0), 5000000) - 1;
+	uint32_t holdtime = DIV_ROUND_UP(clock_getPeripherySpeed(clk, 0), 100000000) - 1;
 	CONFIG_ASSERT(mii_speed <= 63);
 
 	fec_data.mii = xSemaphoreCreateBinary();

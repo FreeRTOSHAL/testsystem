@@ -33,6 +33,7 @@
 #include <nlibc_stub.h>
 #include <irq.h>
 #include <semihosting.h>
+#include <lpuarttest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -44,7 +45,7 @@ static struct gpio *gpio = NULL;
 
 static struct gpio_pin *ledPin = NULL;
 static struct gpio_pin *userButton = NULL;
-bool nucleo_userButtonISR(struct gpio_pin *pin, uint32_t pinID, void *data) {
+bool userButtonISR(struct gpio_pin *pin, uint32_t pinID, void *data) {
 	(void) pin;
 	(void) pinID;
 	(void) data;
@@ -63,19 +64,13 @@ int32_t initGPIO() {
 	if (gpio2 != NULL) {
 		return -1;
 	}
-#if 0
-#if (defined(CONFIG_NUCLEO) || defined(CONFIG_PHOTON))
-	userButton = gpioPin_init(gpio, PTC13, GPIO_INPUT, GPIO_OPEN);
-#endif
-#ifdef CONFIG_DISCOVERY
-	userButton = gpioPin_init(gpio, PTA0, GPIO_INPUT, GPIO_OPEN);
-#endif
+	userButton = gpioPin_init(gpio, PTC12, GPIO_INPUT, GPIO_OPEN);
 	if (userButton == NULL) {
 		return -1;
 	}
 	{
 		int32_t ret;
-		ret = gpioPin_setCallback(userButton, nucleo_userButtonISR, NULL, GPIO_EITHER);
+		ret = gpioPin_setCallback(userButton, userButtonISR, NULL, GPIO_EITHER);
 		if (ret < 0) {
 			return -1;
 		}
@@ -84,7 +79,6 @@ int32_t initGPIO() {
 			return -1;
 		}
 	}
-#endif
 	ledPin = gpioPin_init(gpio, PTD15, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (ledPin == NULL) {
 		return -1;
@@ -178,15 +172,20 @@ int main() {
 	struct pwm *pwm = NULL;
 #endif
 #ifdef CONFIG_UART
+	#ifdef CONFIG_S32K_STDOUT_UART0
+	//struct uart *uart = uart_init(LPUART0_ID, 115200);
+	struct uart *uart = uart_init(LPUART0_ID, 115200);
+	#endif
 	#ifdef CONFIG_S32K_STDOUT_UART1
-	struct uart *uart = uart_init(UART1_ID, 115200);
+	struct uart *uart = uart_init(LPUART1_ID, 115200);
 	#endif
 	#ifdef CONFIG_S32K_STDOUT_UART2
-	struct uart *uart = uart_init(UART2_ID, 115200);
+	struct uart *uart = uart_init(LPUART2_ID, 115200);
 	#endif
 	#ifdef CONFIG_S32K_STDOUT_SEMIHOSTING
 	struct uart *uart = uart_init(SEMIHOSTING_UART_ID, 115200);
 	#endif
+	CONFIG_ASSERT(uart != NULL);
 #endif
 #ifdef CONFIG_NEWLIB
 	ret = newlib_init(uart, uart);
@@ -223,6 +222,9 @@ int main() {
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
+#endif
+#ifdef CONFIG_LPUART_TEST
+	lpuarttest_init();
 #endif
 #if 0
 #ifdef CONFIG_TIMER_TEST

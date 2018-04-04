@@ -12,5 +12,18 @@ choice
 		select ARCH_ARM_DEBUG
 		select SEMIHOSTING
 		select SEMIHOSTING_UART
+	config S32K_STDOUT_UART0
+		bool "LPUART 0"
+		depends on MACH_S32K_LPUART0
+	config S32K_STDOUT_UART1
+		bool "LPUART 1"
+		depends on MACH_S32K_LPUART1
+	config S32K_STDOUT_UART2
+		bool "LPUART 2"
+		depends on MACH_S32K_LPUART2
 endchoice
+config LPUART_TEST
+	bool "lpuart Test"
+	depends on MACH_S32K_LPUART1
+	depends on !S32K_STDOUT_UART1
 endmenu
