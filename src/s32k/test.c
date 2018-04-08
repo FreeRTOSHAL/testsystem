@@ -34,6 +34,7 @@
 #include <irq.h>
 #include <semihosting.h>
 #include <lpuarttest.h>
+#include <timertest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -43,7 +44,7 @@
 #ifdef CONFIG_GPIO
 static struct gpio *gpio = NULL;
 
-static struct gpio_pin *ledPin = NULL;
+static struct gpio_pin *ledRGBPin[3];
 static struct gpio_pin *userButton = NULL;
 bool userButtonISR(struct gpio_pin *pin, uint32_t pinID, void *data) {
 	(void) pin;
@@ -79,8 +80,16 @@ int32_t initGPIO() {
 			return -1;
 		}
 	}
-	ledPin = gpioPin_init(gpio, PTD15, GPIO_OUTPUT, GPIO_PULL_UP);
-	if (ledPin == NULL) {
+	ledRGBPin[0] = gpioPin_init(gpio, PTD15, GPIO_OUTPUT, GPIO_PULL_UP);
+	if (ledRGBPin[0] == NULL) {
+		return -1;
+	}
+	ledRGBPin[1] = gpioPin_init(gpio, PTD16, GPIO_OUTPUT, GPIO_PULL_UP);
+	if (ledRGBPin[1] == NULL) {
+		return -1;
+	}
+	ledRGBPin[2] = gpioPin_init(gpio, PTD0, GPIO_OUTPUT, GPIO_PULL_UP);
+	if (ledRGBPin[2] == NULL) {
 		return -1;
 	}
 	
@@ -226,19 +235,8 @@ int main() {
 #ifdef CONFIG_LPUART_TEST
 	lpuarttest_init();
 #endif
-#if 0
 #ifdef CONFIG_TIMER_TEST
-	timertest_init();
-#endif
-#ifdef CONFIG_SDTEST
-	sdtest_init();
-#endif
-#ifdef CONFIG_CAROLO_BOARD_TEST
-	boardtest_init();
-#endif
-#ifdef CONFIG_SPITEST
-	spi_test();
-#endif
+	timertest_init(ledRGBPin);
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
