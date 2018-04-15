@@ -26,4 +26,20 @@ config LPUART_TEST
 	bool "lpuart Test"
 	depends on MACH_S32K_LPUART1
 	depends on !S32K_STDOUT_UART1
+config TIMER_TEST
+	bool "Flextimer Test"
+	depends on MACH_S32K_FLEXTIMER
+	choice
+		prompt "Timter Test"
+		depends on TIMER_TEST
+		config TIMER_TEST_ONESHOT
+			depends on TIMER_TEST
+			bool "Use One Shot Mode"
+		config TIMER_TEST_PERIODIC
+			bool "Use Periodic Mode"
+		config TIMER_TEST_PWM
+			depends on TIMER_TEST
+			depends on PWM
+			bool "Use PWM"
+	endchoice
 endmenu

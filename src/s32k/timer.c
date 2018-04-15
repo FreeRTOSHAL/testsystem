@@ -26,9 +26,14 @@
 #include <timer.h>
 #include <gpio.h>
 #include <devs.h>
+#include <pwm.h>
 
 struct timer *timer;
+#ifndef CONFIG_TIMER_TEST_PWM
 struct gpio_pin **rgb;
+#else
+struct pwm *pwm[3];
+#endif
 uint32_t rgbPins = BIT(0);
 uint32_t state = 0x0;
 uint64_t n = 10000;
@@ -37,6 +42,7 @@ bool on = true;
 
 static bool irqhandle(struct timer *timer, void *data) {
 	(void) data;
+#ifndef CONFIG_TIMER_TEST_PWM
 	if (on) {
 		if (rgbPins & BIT(0)) {
 			gpioPin_setPin(rgb[0]);
@@ -58,6 +64,7 @@ static bool irqhandle(struct timer *timer, void *data) {
 			gpioPin_clearPin(rgb[2]);
 		}
 	}
+#endif
 	if (on) {
 		if (up) {
 			n+=100;
@@ -100,36 +107,71 @@ static bool irqhandle(struct timer *timer, void *data) {
 			up = true;
 		}
 	}
-#ifdef CONFIG_TIMER_TEST_ONESHOT
+#ifndef CONFIG_TIMER_TEST_PWM
+# ifdef CONFIG_TIMER_TEST_ONESHOT
 	if (on) {
 		CONFIG_ASSERT(timer_oneshot(timer, n) == 0);
 	} else {
 		CONFIG_ASSERT(timer_oneshot(timer, 20000 - n) == 0);
 	}
-#else
+# else
 	if (on) {
 		CONFIG_ASSERT(timer_periodic(timer, n) == 0);
 	} else {
 		CONFIG_ASSERT(timer_periodic(timer, 20000 - n) == 0);
 	}
-#endif
+# endif
 	on = !on;
+#else
+	if (rgbPins & BIT(0)) {
+		pwm_setDutyCycle(pwm[0], n);
+	} else {
+		pwm_setDutyCycle(pwm[0], 20000);
+	}
+	if (rgbPins & BIT(1)) {
+		pwm_setDutyCycle(pwm[1], n);
+	} else {
+		pwm_setDutyCycle(pwm[1], 20000);
+	}
+	if (rgbPins & BIT(2)) {
+		pwm_setDutyCycle(pwm[2], n);
+	} else {
+		pwm_setDutyCycle(pwm[2], 20000);
+	}
+#endif
 	return false;
 }
 int32_t timertest_init(struct gpio_pin **rgbPins) {
 	int32_t ret;
+#ifndef CONFIG_TIMER_TEST_PWM
 	rgb = rgbPins;
+#else
+	(void) rgbPins;
+#endif
 	timer = timer_init(FLEXTIMER0_ID, 128, 20000, 700);
 	CONFIG_ASSERT(timer != NULL);
 	ret = timer_setOverflowCallback(timer, &irqhandle, NULL);
 	CONFIG_ASSERT(ret == 0);
+#ifndef CONFIG_TIMER_TEST_PWM
 	gpioPin_setPin(rgb[0]);
 	gpioPin_setPin(rgb[1]);
 	gpioPin_setPin(rgb[2]);
-#ifdef CONFIG_TIMER_TEST_ONESHOT
-	CONFIG_ASSERT(timer_oneshot(timer, n) == 0);
 #else
+	pwm[0] = pwm_init(FLEXTIMER0_PWM0_PTD15_ID);
+	CONFIG_ASSERT(pwm[0]);
+	pwm[1] = pwm_init(FLEXTIMER0_PWM1_PTD16_ID);
+	CONFIG_ASSERT(pwm[1]);
+	pwm[2] = pwm_init(FLEXTIMER0_PWM2_PTD0_ID);
+	CONFIG_ASSERT(pwm[2]);
+#endif
+#ifndef CONFIG_TIMER_TEST_PWM
+# ifdef CONFIG_TIMER_TEST_ONESHOT
+	CONFIG_ASSERT(timer_oneshot(timer, n) == 0);
+# else
 	CONFIG_ASSERT(timer_periodic(timer, n) == 0);
+# endif
+#else
+	CONFIG_ASSERT(pwm_setPeriod(pwm[0], 20000) == 0);
 #endif
 	return 0;
 }
