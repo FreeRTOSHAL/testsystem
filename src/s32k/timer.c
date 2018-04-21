@@ -27,16 +27,21 @@
 #include <gpio.h>
 #include <devs.h>
 #include <pwm.h>
+#include <capture.h>
 
+#define MAX_TIME 21000
 struct timer *timer;
 #ifndef CONFIG_TIMER_TEST_PWM
 struct gpio_pin **rgb;
 #else
 struct pwm *pwm[3];
 #endif
+#ifdef CONFIG_CAPTURE_TEST
+struct capture *capture;
+#endif
 uint32_t rgbPins = BIT(0);
 uint32_t state = 0x0;
-uint64_t n = 10000;
+uint64_t n = MAX_TIME / 2;
 bool up = true;
 bool on = true;
 
@@ -71,8 +76,7 @@ static bool irqhandle(struct timer *timer, void *data) {
 		} else {
 			n-=100;
 		}
-		if (n >= 19800) {
-			printf("down\n");
+		if (n >= (MAX_TIME - 200)) {
 			up = false;
 			if (state == 7) {
 				state = 0;
@@ -100,10 +104,13 @@ static bool irqhandle(struct timer *timer, void *data) {
 					rgbPins = BIT(0) | BIT(1) | BIT(2);
 					break;
 			}
+#if 1
 		} else if (n <= 16000) {
-		/*} else if (n <= 10000) {
-		} else if (n <= 100) {*/
-			printf("up\n");
+#elif 0
+		} else if (n <= 10000) {
+#else
+		} else if (n <= 100) {
+#endif
 			up = true;
 		}
 	}
@@ -112,35 +119,44 @@ static bool irqhandle(struct timer *timer, void *data) {
 	if (on) {
 		CONFIG_ASSERT(timer_oneshot(timer, n) == 0);
 	} else {
-		CONFIG_ASSERT(timer_oneshot(timer, 20000 - n) == 0);
+		CONFIG_ASSERT(timer_oneshot(timer, MAX_TIME - n) == 0);
 	}
 # else
 	if (on) {
 		CONFIG_ASSERT(timer_periodic(timer, n) == 0);
 	} else {
-		CONFIG_ASSERT(timer_periodic(timer, 20000 - n) == 0);
+		CONFIG_ASSERT(timer_periodic(timer, MAX_TIME - n) == 0);
 	}
 # endif
 	on = !on;
 #else
 	if (rgbPins & BIT(0)) {
-		pwm_setDutyCycle(pwm[0], n);
+		CONFIG_ASSERT(pwm_setDutyCycle(pwm[0], n) == 0);
 	} else {
-		pwm_setDutyCycle(pwm[0], 20000);
+		CONFIG_ASSERT(pwm_setDutyCycle(pwm[0], MAX_TIME) == 0);
 	}
 	if (rgbPins & BIT(1)) {
-		pwm_setDutyCycle(pwm[1], n);
+		CONFIG_ASSERT(pwm_setDutyCycle(pwm[1], n) == 0);
 	} else {
-		pwm_setDutyCycle(pwm[1], 20000);
+		CONFIG_ASSERT(pwm_setDutyCycle(pwm[1], MAX_TIME) == 0);
 	}
 	if (rgbPins & BIT(2)) {
-		pwm_setDutyCycle(pwm[2], n);
+		CONFIG_ASSERT(pwm_setDutyCycle(pwm[2], n) == 0);
 	} else {
-		pwm_setDutyCycle(pwm[2], 20000);
+		CONFIG_ASSERT(pwm_setDutyCycle(pwm[2], MAX_TIME) == 0);
 	}
 #endif
 	return false;
 }
+
+#ifdef CONFIG_CAPTURE_TEST
+bool captureCallback(struct capture *capture, uint32_t index, uint64_t time, void *data) {
+	double feq = 1 / (((double) time) / 1000000.);
+	printf("Capture: %f Hz", feq);
+	return false;
+}
+#endif
+
 int32_t timertest_init(struct gpio_pin **rgbPins) {
 	int32_t ret;
 #ifndef CONFIG_TIMER_TEST_PWM
@@ -148,7 +164,7 @@ int32_t timertest_init(struct gpio_pin **rgbPins) {
 #else
 	(void) rgbPins;
 #endif
-	timer = timer_init(FLEXTIMER0_ID, 128, 20000, 700);
+	timer = timer_init(FLEXTIMER0_ID, 128, MAX_TIME, 700);
 	CONFIG_ASSERT(timer != NULL);
 	ret = timer_setOverflowCallback(timer, &irqhandle, NULL);
 	CONFIG_ASSERT(ret == 0);
@@ -171,7 +187,12 @@ int32_t timertest_init(struct gpio_pin **rgbPins) {
 	CONFIG_ASSERT(timer_periodic(timer, n) == 0);
 # endif
 #else
-	CONFIG_ASSERT(pwm_setPeriod(pwm[0], 20000) == 0);
+	CONFIG_ASSERT(pwm_setPeriod(pwm[0], MAX_TIME) == 0);
+#endif
+#ifdef CONFIG_CAPTURE_TEST
+	capture = capture_init(FLEXTIMER0_CAPTURE3_PTC3_ID);
+	CONFIG_ASSERT(capture);
+	CONFIG_ASSERT(capture_setCallback(capture, captureCallback, NULL) == 0);
 #endif
 	return 0;
 }

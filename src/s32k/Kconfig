@@ -42,4 +42,8 @@ config TIMER_TEST
 			depends on PWM
 			bool "Use PWM"
 	endchoice
+		config CAPTURE_TEST
+			depends on CAPTURE
+			depends on TIMER_TEST
+			bool "Capture Test"
 endmenu
