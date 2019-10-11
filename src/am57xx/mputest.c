@@ -82,7 +82,7 @@ void mputest_initTask(void *data) {
 	printf("MPU9250 init\n");
 	do {
 		mpu = mpu9250_init(0, portMAX_DELAY);
-	} while (mpu != NULL);
+	} while (mpu == NULL);
 	printf("MPU9250 inited\n");
 	accel = accel_init(0);
 	CONFIG_ASSERT(accel != NULL);
