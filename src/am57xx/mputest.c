@@ -26,6 +26,7 @@
 #include <spi.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include <devs.h>
 
 void mputest_task(void *data) {
 	struct mpu9250 *mpu = data;
@@ -43,7 +44,7 @@ void mputest_task(void *data) {
 	}
 }
 
-MPU9250_ADDDEV(mpu0, 1, 0, SPI_OPT_GPIO_DIS, 500000);
+MPU9250_ADDDEV(mpu0, 0, 0, SPI_OPT_GPIO_DIS, 500000);
 
 OS_DEFINE_TASK(mpuTask, 1024);
 OS_DEFINE_TASK(mpuInitTask, 1024);
@@ -68,7 +69,7 @@ void mputest_initTask(void *data) {
 			.cs_delay = 500,
 			.bautrate = 500000,
 		};
-		spi = spi_init(1, SPI_3WIRE_CS, NULL);
+		spi = spi_init(SPI1_ID, SPI_3WIRE_CS, NULL);
 		CONFIG_ASSERT(spi != NULL);
 		/*slave[0] = spiSlave_init(spi, &opt);
 		CONFIG_ASSERT(slave[0] != NULL);*/ /* Init by Driver*/
@@ -77,13 +78,11 @@ void mputest_initTask(void *data) {
 		opt.cs = 1;
 		slave[1] = spiSlave_init(spi, &opt);
 		CONFIG_ASSERT(slave[1] != NULL);
-		opt.cs = 3;
-		slave[2] = spiSlave_init(spi, &opt);
-		CONFIG_ASSERT(slave[2] != NULL);
 	}
 	printf("MPU9250 init\n");
-	mpu = mpu9250_init(0, portMAX_DELAY);
-	CONFIG_ASSERT(mpu != NULL);
+	do {
+		mpu = mpu9250_init(0, portMAX_DELAY);
+	} while (mpu != NULL);
 	printf("MPU9250 inited\n");
 	accel = accel_init(0);
 	CONFIG_ASSERT(accel != NULL);
