@@ -35,6 +35,8 @@
 #include <semihosting.h>
 #include <lpuarttest.h>
 #include <timertest.h>
+#include <timer.h>
+#include <pwm.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -43,8 +45,8 @@
 
 #ifdef CONFIG_GPIO
 static struct gpio *gpio = NULL;
-
 static struct gpio_pin *ledRGBPin[3];
+#ifdef CONFIG_S32K144_EVM
 static struct gpio_pin *userButton = NULL;
 bool userButtonISR(struct gpio_pin *pin, uint32_t pinID, void *data) {
 	(void) pin;
@@ -53,6 +55,7 @@ bool userButtonISR(struct gpio_pin *pin, uint32_t pinID, void *data) {
 	PRINTF("User Button pressed\n");
 	return false;
 }
+#endif
 
 int32_t initGPIO() {
 	struct gpio *gpio2;
@@ -65,6 +68,7 @@ int32_t initGPIO() {
 	if (gpio2 != NULL) {
 		return -1;
 	}
+#ifdef CONFIG_S32K144_EVM
 	userButton = gpioPin_init(gpio, PTC12, GPIO_INPUT, GPIO_OPEN);
 	if (userButton == NULL) {
 		return -1;
@@ -80,6 +84,8 @@ int32_t initGPIO() {
 			return -1;
 		}
 	}
+#endif
+#ifdef CONFIG_S32K144_EVM
 	ledRGBPin[0] = gpioPin_init(gpio, PTD15, GPIO_OUTPUT, GPIO_PULL_UP);
 	if (ledRGBPin[0] == NULL) {
 		return -1;
@@ -92,6 +98,21 @@ int32_t initGPIO() {
 	if (ledRGBPin[2] == NULL) {
 		return -1;
 	}
+#endif
+#ifdef CONFIG_S32K142_BMS_TEST_R0
+	ledRGBPin[0] = gpioPin_init(gpio, PTC17, GPIO_OUTPUT, GPIO_PULL_UP);
+	if (ledRGBPin[0] == NULL) {
+		return -1;
+	}
+	ledRGBPin[1] = gpioPin_init(gpio, PTC16, GPIO_OUTPUT, GPIO_PULL_UP);
+	if (ledRGBPin[1] == NULL) {
+		return -1;
+	}
+	ledRGBPin[2] = gpioPin_init(gpio, PTC15, GPIO_OUTPUT, GPIO_PULL_UP);
+	if (ledRGBPin[2] == NULL) {
+		return -1;
+	}
+#endif
 	
 	return 0;
 }
@@ -141,7 +162,7 @@ void ledTask(void *data) {
 		if (n == 0 || n == 20000) {
 			waittime = 1000;
 # ifdef CONFIG_GPIO
-			gpioPin_togglePin(ledPin);
+			//gpioPin_togglePin(ledPin);
 # endif
 		} else {
 			waittime = 20;
@@ -212,12 +233,11 @@ int main() {
 	ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
 #endif
-#if 0
-#if defined(CONFIG_PWM) && !defined(CONFIG_TIMER_TEST)
+#if defined(CONFIG_PWM) && defined(CONFIG_MACH_S32K_FLEXTIMER1_PWM3_PTC15) && !defined(CONFIG_TIMER_TEST)
 	{
-		struct timer *timer = timer_init(TIMER4_ID, 500, 1, 0);
+		struct timer *timer = timer_init(FLEXTIMER1_ID, 128, 21000, 700);
 		CONFIG_ASSERT(timer);
-		pwm = pwm_init(PWM4_4_ID);
+		pwm = pwm_init(FLEXTIMER1_PWM3_PTC15_ID);
 		CONFIG_ASSERT(pwm);
 		ret = pwm_setPeriod(pwm, 20000);
 		CONFIG_ASSERT(ret == 0);
@@ -225,8 +245,7 @@ int main() {
 		CONFIG_ASSERT(ret == 0);
 	}
 #endif
-#endif
-#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil) && !defined(CONFIG_TIMER_TEST)
+#if (defined(CONFIG_GPIO) || (defined(CONFIG_PWM) && defined(CONFIG_MACH_S32K_FLEXTIMER1_PWM3_PTC15))) && defined(CONFIG_INCLUDE_vTaskDelayUntil) && !defined(CONFIG_TIMER_TEST)
 	OS_CREATE_TASK(ledTask, "LED Task", 128, pwm, 1, taskLED);
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS

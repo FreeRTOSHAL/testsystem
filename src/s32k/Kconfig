@@ -22,6 +22,15 @@ choice
 		bool "LPUART 2"
 		depends on MACH_S32K_LPUART2
 endchoice
+choice
+	prompt "Test Board"
+	config S32K144_EVM
+		bool "S32K144_EVM"
+		depends on S32K144
+	config S32K142_BMS_TEST_R0
+		bool "S32K142 BMS Master Testboard (Brand) r0"
+		depends on S32K142
+endchoice
 config LPUART_TEST
 	bool "lpuart Test"
 	depends on MACH_S32K_LPUART1
