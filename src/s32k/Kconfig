@@ -55,4 +55,7 @@ config TIMER_TEST
 			depends on CAPTURE
 			depends on TIMER_TEST
 			bool "Capture Test"
+config SPI_TEST
+	bool "SPI Test"
+	depends on SPI
 endmenu

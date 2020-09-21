@@ -37,6 +37,7 @@
 #include <timertest.h>
 #include <timer.h>
 #include <pwm.h>
+#include <spitest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -256,6 +257,9 @@ int main() {
 #endif
 #ifdef CONFIG_TIMER_TEST
 	timertest_init(ledRGBPin);
+#endif
+#ifdef CONFIG_SPI_TEST
+	spitest_init();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
