@@ -173,5 +173,5 @@ void spitest_init() {
 		CONFIG_ASSERT(slaves[2]);
 	}
 #endif
-	OS_CREATE_TASK(spiTask, "Task Manager Task", 512, slaves, 2, taskSPI);
+	OS_CREATE_TASK(spiTask, "SPI Test", 512, slaves, 2, taskSPI);
 }

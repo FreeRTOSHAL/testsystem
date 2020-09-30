@@ -18,6 +18,7 @@
 #include <semihosting.h>
 #include <lpuarttest.h>
 #include <timertest.h>
+#include <ltc6811test.h>
 #include <timer.h>
 #include <pwm.h>
 #include <spitest.h>
@@ -243,6 +244,9 @@ int main() {
 #endif
 #ifdef CONFIG_SPI_TEST
 	spitest_init();
+#endif
+#ifdef CONFIG_LTC6811_TEST
+	ltc6811_test();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();

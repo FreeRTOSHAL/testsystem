@@ -58,4 +58,8 @@ config TIMER_TEST
 config SPI_TEST
 	bool "SPI Test"
 	depends on SPI
+config LTC6811_TEST
+	bool "LTC6811 Test"
+	depends on SPI
+	depends on LTC6811
 endmenu
