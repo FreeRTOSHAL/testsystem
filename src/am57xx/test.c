@@ -61,7 +61,7 @@ void vApplicationTickHook() {
 
 }
 
-void vApplicationStackOverflowHook() {
+void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName ) {
 #ifdef CONFIG_INCLUDE_pcTaskGetTaskName
 	char *taskname = pcTaskGetTaskName(NULL);
 	PRINTF("Taskname: %s\n", taskname);

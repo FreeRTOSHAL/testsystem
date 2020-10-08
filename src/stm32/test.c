@@ -94,7 +94,7 @@ void vApplicationTickHook() {
 
 }
 
-void vApplicationStackOverflowHook() {
+void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName ) {
 	CONFIG_ASSERT(0);
 }
 
