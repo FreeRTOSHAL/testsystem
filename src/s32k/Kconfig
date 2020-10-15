@@ -30,6 +30,9 @@ choice
 	config S32K142_BMS_TEST_R0
 		bool "S32K142 BMS Master Testboard (Brand) r0"
 		depends on S32K142
+	config S32K142_BMS_TEST_LUCA
+		bool "S32K142 BMS Master Testboard (LOCA) r0"
+		depends on S32K142
 endchoice
 config LPUART_TEST
 	bool "lpuart Test"
@@ -58,6 +61,11 @@ config TIMER_TEST
 config SPI_TEST
 	bool "SPI Test"
 	depends on SPI
+	config SPI_TEST_SINGEL_BYTE
+		bool "Test Singel Byte access"
+		depends on SPI_TEST
+		default n
+
 config LTC6811_TEST
 	bool "LTC6811 Test"
 	depends on SPI
