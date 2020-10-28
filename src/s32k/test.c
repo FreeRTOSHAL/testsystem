@@ -22,6 +22,7 @@
 #include <timer.h>
 #include <pwm.h>
 #include <spitest.h>
+#include <cantest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -247,6 +248,9 @@ int main() {
 #endif
 #ifdef CONFIG_LTC6811_TEST
 	ltc6811_test();
+#endif
+#ifdef CONFIG_CAN_TEST
+	can_test();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();

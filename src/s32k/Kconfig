@@ -70,4 +70,8 @@ config LTC6811_TEST
 	bool "LTC6811 Test"
 	depends on SPI
 	depends on LTC6811
+
+config CAN_TEST
+	bool "CAN Test"
+	depends on CAN
 endmenu
