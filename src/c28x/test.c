@@ -29,9 +29,6 @@ void userErrorHandler(void) {
 
 }
 
-void vApplicationSetupTimerInterrupt(void) {
-
-}
 
 int main() {
 	int32_t ret;
