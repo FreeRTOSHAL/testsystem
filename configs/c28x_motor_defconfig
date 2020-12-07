@@ -1,0 +1,187 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# FreeRTOS Configuration
+#
+
+#
+# Architecture Settings
+#
+# CONFIG_ARCH_ARM is not set
+# CONFIG_ARCH_X86 is not set
+CONFIG_ARCH_C2000=y
+
+#
+# Global Settings
+#
+CONFIG_CPU_CLOCK_BY_INTERFACE=y
+# CONFIG_CPU_CLOCK_BY_DEFINE is not set
+
+#
+# Architecture Settings
+#
+CONFIG_ARCH_INCLUDE="-Iarch/c2000/c28x -Iarch/c2000/include -I$(shell dirname $(shell which $(CC)))/../include"
+CONFIG_ARCH_CFLAGS=""
+CONFIG_ARCH_AFLAGS=""
+CONFIG_ARCH_LDFLAGS=""
+CONFIG_ARCH_C2000_C28x=y
+
+#
+# C2000 C28x DSP Settings
+#
+
+#
+# Mach Settings
+#
+CONFIG_MACH_C28X=y
+CONFIG_MACH_INIT_STACK_SIZE=700
+CONFIG_MACH_INCLUDE="-Imach/c28x/include"
+CONFIG_MACH_DEFINE_HEAP=y
+CONFIG_MACH_HAS_UART=y
+CONFIG_MACH_HAS_TIMER=y
+CONFIG_MACH_LIBS="-lrts2800_ml.lib mach/c28x/F28069F.cmd"
+CONFIG_EXTRA_MACH_LINKFLAGS="-z -i$(shell dirname $(shell which $(CC)))/../lib --disable_auto_rts --priority --reread_libs --diag_suppress=16002 --diag_suppress=10063-D --xml_link_info='projekt_linkInfo.xml' --entry_point=code_start --rom_model --warn_sections --stack_size=$(CONFIG_MACH_INIT_STACK_SIZE) -heap=$(CONFIG_MACH_HEAP_SIZE)"
+
+#
+# NXP S32K Settings
+#
+CONFIG_MACH_HEAP_SIZE=100
+
+#
+# Clock Configuation
+#
+# CONFIG_MACH_C28X_CLOCK_LOPCP_BY_4 is not set
+CONFIG_MACH_C28X_CLOCK_LOPCP_BY_1=y
+# CONFIG_MACH_C28X_CLOCK_LOPCP_BY_2 is not set
+CONFIG_MACH_C28X_RAM_DMA_OFF=y
+# CONFIG_MACH_C28X_RAM_DMA_4 is not set
+# CONFIG_MACH_C28X_RAM_DMA_1 is not set
+CONFIG_MACH_C28X_SCI=y
+CONFIG_MACH_C28X_SCI0=y
+CONFIG_MACH_C28X_SCI0_GPIO_28=y
+# CONFIG_MACH_C28X_SCI0_GPIO_7 is not set
+CONFIG_MACH_C28X_SCI0_GPIO_12=y
+# CONFIG_MACH_C28X_SCI0_GPIO_29 is not set
+# CONFIG_MACH_C28X_SCI1 is not set
+CONFIG_MACH_C28X_CPU_TIMER=y
+# CONFIG_MACH_C28X_CPU_TIMER0 is not set
+# CONFIG_MACH_C28X_CPU_TIMER1 is not set
+CONFIG_MACH_C28X_CPU_TIMER2=y
+
+#
+# Driver
+#
+
+#
+# Generic Driver Settings
+#
+# CONFIG_INSTANCE_NAME is not set
+CONFIG_USE_STATIC=y
+# CONFIG_GEN_VERSION is not set
+# CONFIG_GCC is not set
+CONFIG_UART=y
+CONFIG_UART_GENERIC_STRING=y
+CONFIG_UART_GENERIC_BYTE=y
+# CONFIG_UART_THREAD_SAVE is not set
+# CONFIG_UART_MULTI is not set
+# CONFIG_SENSOR is not set
+# CONFIG_ADC is not set
+# CONFIG_POWER is not set
+CONFIG_TIMER=y
+# CONFIG_TIMER_MULTI is not set
+# CONFIG_PWM is not set
+# CONFIG_EXAMPLE is not set
+# CONFIG_NLIBC is not set
+# CONFIG_RPROC is not set
+# CONFIG_COUNTER is not set
+# CONFIG_RTC is not set
+# CONFIG_I2C is not set
+
+#
+# FreeRTOS
+#
+
+#
+# Basic Settings
+#
+CONFIG_SUPPORT_STATIC_ALLOCATION=y
+# CONFIG_SUPPORT_DYNAMIC_ALLOCATION is not set
+CONFIG_SUPPORT_DYNAMIC_ALLOCATION_DISABLED=y
+# CONFIG_INCLUDE_USER_FREERTOS_CONFIG is not set
+CONFIG_ASSERT_DEFAULT=y
+# CONFIG_ASSERT_DEFAULT_PRINT is not set
+# CONFIG_ASSERT_USER_DEFINED is not set
+# CONFIG_ASSERT_DISABLED is not set
+# CONFIG_USE_16_BIT_TICKS is not set
+CONFIG_TICK_RATE_HZ=1000
+# CONFIG_USE_TRACE_FACILITY is not set
+# CONFIG_USE_LIST_DATA_INTEGRITY_CHECK_BYTES is not set
+# CONFIG_USE_ALTERNATIVE_API is not set
+
+#
+# Task Setting
+#
+CONFIG_MAX_PRIORITIES=5
+CONFIG_MINIMAL_STACK_SIZE=128
+CONFIG_MAX_TASK_NAME_LEN=16
+CONFIG_NUM_THREAD_LOCAL_STORAGE_POINTERS=0
+# CONFIG_USE_IDLE_HOOK is not set
+# CONFIG_USE_DAEMON_TASK_STARTUP_HOOK is not set
+CONFIG_INCLUDE_vTaskSuspend=y
+# CONFIG_INCLUDE_xTaskResumeFromISR is not set
+CONFIG_USE_PREEMPTION=y
+CONFIG_USE_TIME_SLICING=y
+CONFIG_IDLE_SHOULD_YIELD=y
+# CONFIG_USE_APPLICATION_TASK_TAG is not set
+# CONFIG_USE_TASK_NOTIFICATIONS is not set
+# CONFIG_CHECK_STACK_OVERFLOW is not set
+# CONFIG_RECORD_STACK_HIGH_ADDRESS is not set
+# CONFIG_USE_TICK_HOOK is not set
+CONFIG_STACK_DEPTH_TYPE_16BIT=y
+# CONFIG_STACK_DEPTH_TYPE_32BIT is not set
+CONFIG_INITIAL_TICK_COUNT=0
+# CONFIG_USE_POSIX_ERRNO is not set
+
+#
+# Function Support
+#
+# CONFIG_INCLUDE_vTaskDelete is not set
+# CONFIG_INCLUDE_xTaskGetIdleTaskHandle is not set
+CONFIG_INCLUDE_vTaskDelay=y
+CONFIG_INCLUDE_vTaskDelayUntil=y
+# CONFIG_INCLUDE_eTaskGetState is not set
+# CONFIG_INCLUDE_uxTaskPriorityGet is not set
+# CONFIG_INCLUDE_vTaskPrioritySet is not set
+# CONFIG_INCLUDE_pcTaskGetTaskName is not set
+# CONFIG_INCLUDE_xTaskGetSchedulerState is not set
+# CONFIG_INCLUDE_xTaskGetHandle is not set
+# CONFIG_INCLUDE_xTaskGetCurrentTaskHandle is not set
+# CONFIG_INCLUDE_FREERTOS_TASK_C_ADDITIONS_H is not set
+# CONFIG_INCLUDE_xTaskAbortDelay is not set
+
+#
+# Queue Settings
+#
+# CONFIG_USE_QUEUE_SETS is not set
+CONFIG_QUEUE_REGISTRY_SIZE=0
+# CONFIG_USE_MUTEXES is not set
+# CONFIG_USE_COUNTING_SEMAPHORES is not set
+# CONFIG_USE_TIMERS is not set
+# CONFIG_USE_CO_ROUTINES is not set
+
+#
+# Compiler Settings
+#
+CONFIG_CROSS_COMPILE="c2000-"
+CONFIG_DEBUG=y
+CONFIG_OPTIMIZATION_O0=y
+# CONFIG_OPTIMIZATION_O1 is not set
+# CONFIG_OPTIMIZATION_O2 is not set
+# CONFIG_OPTIMIZATION_O3 is not set
+# CONFIG_OPTIMIZATION_Ofast is not set
+# CONFIG_OPTIMIZATION_Os is not set
+# CONFIG_REMOVE_UNUSED_SECTIONS is not set
+# CONFIG_USER_ERROR_FUNCTION is not set
+CONFIG_EXTRA_AFLAGS=""
+CONFIG_EXTRA_CFLAGS=""
+CONFIG_EXTRA_CPPFLAGS=""
+CONFIG_EXTRA_LDFLAGS=""
