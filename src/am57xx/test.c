@@ -27,6 +27,7 @@
 #include <mputest.h>
 #include <rtctest.h>
 #include <softwareCaptureTest.h>
+#include <cantest.h>
 #if defined(CONFIG_NEWLIB_UART) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -188,6 +189,9 @@ int main() {
 #endif
 #ifdef CONFIG_SOFTWARE_CAPTURE_TEST
 	softwareCaptureTest_init();
+#endif
+#ifdef CONFIG_CAN_TEST
+    can_test();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler();

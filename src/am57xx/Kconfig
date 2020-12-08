@@ -34,4 +34,8 @@ config SOFTWARE_CAPTURE_TEST
 	bool "Software Capture Test"
 	depends on CAPTURE_SOFTWARE
 	default n
+config CAN_TEST
+    bool "CAN Test"
+    depends on CAN
+    default n
 endmenu
