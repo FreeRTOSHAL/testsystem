@@ -6,7 +6,7 @@
 #include <string.h>
 
 void can_test() {
-    struct can *can = CAN_INIT(CARCAN1_ID, 500000, NULL, false);
-    CAN_DEINIT(can);
+    struct can *can = can_init(CARCAN1_ID, 500000, NULL, false, false, NULL);
+    can_deinit(can);
 }
 

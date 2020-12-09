@@ -191,6 +191,7 @@ int main() {
 	softwareCaptureTest_init();
 #endif
 #ifdef CONFIG_CAN_TEST
+    printf("testing CAN!\n");
     can_test();
 #endif
 	PRINTF("Start Scheduler\n");
