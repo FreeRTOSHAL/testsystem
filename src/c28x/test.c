@@ -13,6 +13,8 @@
 #include <devs.h>
 #include <irq.h>
 # define PRINTF(...) printf(__VA_ARGS__)
+#include <gpio.h>
+#include <iomux.h>
 
 void vApplicationMallocFailedHook( void ) {
 	CONFIG_ASSERT(0);
@@ -44,7 +46,22 @@ int stdio_dread(int dev_fd, char *buf, unsigned count) {
 }
 
 int stdio_dwrite(int dev_fd, const char *buf, unsigned count) {
-	return uart_write(stdio, buf, count, portMAX_DELAY);
+	int32_t ret;
+	int i = 0;
+	for (i = 0; i < count; i++) {
+		if (*buf == '\n') {
+			ret = uart_putc(stdio, '\r', portMAX_DELAY);
+			if (ret < 0) {
+				return -1;
+			}
+		}
+		ret = uart_putc(stdio, *buf, portMAX_DELAY);
+		if (ret < 0) {
+			return -1;
+		}
+		buf++;
+	}
+	return i;
 }
 off_t stdio_dlseek(int dev_fd, off_t offset, int origin) {
 	return 0;
@@ -57,11 +74,20 @@ int stdio_drename(const char *old_name, const char *new_name) {
 }
 
 void testTask(void *data) {
+	struct gpio *gpio = gpio_init(GPIO_ID);
 	int i = 0;
+	struct gpio_pin *red = gpioPin_init(gpio, GPIO_50, GPIO_OUTPUT, GPIO_PULL_UP);
+	struct gpio_pin *green = gpioPin_init(gpio, GPIO_29, GPIO_OUTPUT, GPIO_PULL_UP);
+	CONFIG_ASSERT(red);
+	CONFIG_ASSERT(green);
+	gpioPin_setPin(red);
+	gpioPin_clearPin(green);
 	TickType_t pxPreviousWakeTime = xTaskGetTickCount();
 	for (;;) {
+		gpioPin_togglePin(red);
+		gpioPin_togglePin(green);
 		PRINTF("%d %lu\n", i++, pxPreviousWakeTime);
-		vTaskDelayUntil(&pxPreviousWakeTime, 100 / portTICK_PERIOD_MS);
+		vTaskDelayUntil(&pxPreviousWakeTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
 
@@ -93,6 +119,5 @@ int main() {
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
 	for(;;);
-	return 0;
 }
 
