@@ -12,7 +12,7 @@ void can_test() {
     struct can_msg msg_recv;
     struct can_filter filter = {2, 0};
     int filterID;
-    can1 = can_init(CARCAN1_ID, 500000, NULL, false, false, NULL);
+    can1 = can_init(DCAN1_ID, 500000, NULL, false, false, NULL);
     printf("start can1 can_send\n");
     filterID = can_registerFilter(can1, &filter);
     can_send(can1, &msg_send, 10000);
@@ -21,7 +21,7 @@ void can_test() {
     can_deinit(can1);
 
     /*
-    struct can *can2 = can_init(CARCAN2_ID, 500000, NULL, false, false, NULL);
+    struct can *can2 = can_init(DCAN2_ID, 500000, NULL, false, false, NULL);
     printf("start can2 can_send\n");
     can_send(can2, &msg, 1000);
     can_deinit(can2);
