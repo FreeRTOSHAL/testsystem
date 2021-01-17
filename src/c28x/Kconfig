@@ -1,0 +1,16 @@
+menu "Application Config"
+config APP_INCLUDE
+	string
+	default "-Iinclude/c28x"
+config CAN_TEST
+	bool "CAN Test"
+	default n
+if CAN_TEST=y
+	config CAN_TEST_TOGGLE_PIN
+		bool "Toggle TX Pins"
+endif
+config CAN_DISABLE
+	bool "Disable CAN"
+	help
+		set CAN TX to high
+endmenu

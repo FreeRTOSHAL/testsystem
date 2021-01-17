@@ -15,6 +15,7 @@
 # define PRINTF(...) printf(__VA_ARGS__)
 #include <gpio.h>
 #include <iomux.h>
+#include <can_test.h>
 
 void vApplicationMallocFailedHook( void ) {
 	CONFIG_ASSERT(0);
@@ -91,7 +92,7 @@ void testTask(void *data) {
 	}
 }
 
-OS_DEFINE_TASK(test, 500);
+OS_DEFINE_TASK(test, 1000);
 
 int main() {
 	int32_t ret;
@@ -113,8 +114,19 @@ int main() {
 	freopen("uart:", "w", stdout);
 	setvbuf(stdout, NULL, _IONBF, 0);
 
-	ret = OS_CREATE_TASK(testTask, "Test Task", 500, NULL, 2, test);
+	ret = OS_CREATE_TASK(testTask, "Test Task", 1000, NULL, 1, test);
 	CONFIG_ASSERT(ret == pdPASS);
+#ifdef CONFIG_CAN_DISABLE
+	{
+		struct gpio *gpio = gpio_init(GPIO_ID);
+		struct gpio_pin *cantxa = gpioPin_init(gpio, GPIO_31, GPIO_OUTPUT, GPIO_PULL_UP);
+		CONFIG_ASSERT(cantxa);
+		gpioPin_setPin(cantxa);
+	}
+#endif
+#ifdef CONFIG_CAN_TEST
+	can_test();
+#endif
 
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
