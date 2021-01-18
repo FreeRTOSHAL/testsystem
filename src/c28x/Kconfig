@@ -6,8 +6,12 @@ config CAN_TEST
 	bool "CAN Test"
 	default n
 if CAN_TEST=y
+    config CAN_TEST_BITRATE
+        int "CAN bitrate"
 	config CAN_TEST_TOGGLE_PIN
 		bool "Toggle TX Pins"
+	config CAN_TEST_SEND
+		bool "Send message"
 endif
 config CAN_DISABLE
 	bool "Disable CAN"
