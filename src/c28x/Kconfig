@@ -8,6 +8,7 @@ config CAN_TEST
 if CAN_TEST=y
     config CAN_TEST_BITRATE
         int "CAN bitrate"
+        default 500000
 	config CAN_TEST_TOGGLE_PIN
 		bool "Toggle TX Pins"
 	config CAN_TEST_SEND
