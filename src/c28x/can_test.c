@@ -10,19 +10,19 @@ static void can_task(void *data) {
 	TickType_t pxPreviousWakeTime = xTaskGetTickCount();
 
 #ifdef CONFIG_CAN_TEST_SEND
-    struct can* can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
-    CONFIG_ASSERT(can0);
+	struct can* can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
+	CONFIG_ASSERT(can0);
 
-    struct can_msg msg = {
-        .id = 0x4AB,
-        .length = 8,
-        .data = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77}
-    };
+	struct can_msg msg = {
+		.id = 0x4AB,
+		.length = 8,
+		.data = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77}
+	};
 
-    for (;;) {
-        can_send(can0, &msg, 1000 / portTICK_PERIOD_MS);
+	for (;;) {
+		can_send(can0, &msg, 1000 / portTICK_PERIOD_MS);
 		vTaskDelayUntil(&pxPreviousWakeTime, 1000 / portTICK_PERIOD_MS);
-    }
+	}
 #endif
 
 #ifdef CONFIG_CAN_TEST_TOGGLE_PIN
@@ -52,3 +52,7 @@ void can_test() {
 	ret = OS_CREATE_TASK(can_task, "CAN Task", 2048, NULL, 2, canTest);
 	CONFIG_ASSERT(ret == pdPASS);
 }
+
+
+// vim: noexpandtab ts=4 sts=4 sw=4
+
