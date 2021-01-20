@@ -10,6 +10,16 @@
 #define PRINTF(...)			printf(__VA_ARGS__)
 
 
+
+static bool can_test_msg_received (struct can *can, struct can_msg *msg, void *data) {
+	BaseType_t pxHigherPriorityTaskWoken;
+
+	(void) xQueueSendToBackFromISR(data, msg, &pxHigherPriorityTaskWoken);
+
+	return pxHigherPriorityTaskWoken;
+}
+
+
 static void can_task(void *data) {
 	TickType_t pxPreviousWakeTime = xTaskGetTickCount();
 	struct can *can0;
@@ -18,6 +28,50 @@ static void can_task(void *data) {
 	int32_t filter_id;
 	struct can_filter filter;
 	int i;
+	OS_DEFINE_QUEUE(can_test_messages, CONFIG_CAN_TEST_ECHO_QUEUE_LENGTH, sizeof(struct can_msg));
+
+#ifdef CONFIG_CAN_TEST_ECHO
+	can_test_messages = OS_CREATE_QUEUE(CONFIG_CAN_TEST_ECHO_QUEUE_LENGTH, sizeof(struct can_msg), can_test_messages);
+
+	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
+	CONFIG_ASSERT(can0);
+
+	ret = can_up(can0);
+	CONFIG_ASSERT(ret == 0);
+
+	filter = (struct can_filter) {
+		.id = 0x4AB,
+		.mask = 0x00F
+	};
+
+
+	filter_id = can_registerFilter(can0, &filter);
+	CONFIG_ASSERT(filter_id >= 0);
+
+	can_setCallback(can0, filter_id, can_test_msg_received, can_test_messages);
+
+	PRINTF("waiting for incoming messages ...\n");
+	for (;;) {
+		ret = xQueueReceive(can_test_messages, &msg, portMAX_DELAY);
+		if (ret == pdTRUE) {
+			PRINTF("msg received (length=%d):", msg.length);
+
+			for (i=0; i<msg.length; i++) {
+				PRINTF(" %02x", msg.data[i]);
+			}
+
+			PRINTF("\n");
+
+			PRINTF("transmitting it back ...\n");
+			ret = can_send(can0, &msg, 1000 / portTICK_PERIOD_MS);
+			if (ret >= 0) {
+				PRINTF("transmission done!\n");
+			} else {
+				PRINTF("transmission failed!\n");
+			}
+		}
+	}
+#endif
 
 #ifdef CONFIG_CAN_TEST_RECV
 	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
