@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <FreeRTOS.h>
 #include <os.h>
 #include <gpio.h>
@@ -6,14 +7,52 @@
 #include <can_test.h>
 #include <can.h>
 
+#define PRINTF(...)			printf(__VA_ARGS__)
+
+
 static void can_task(void *data) {
 	TickType_t pxPreviousWakeTime = xTaskGetTickCount();
+	struct can *can0;
+	struct can_msg msg;
+	int ret;
+	int32_t filter_id;
+	struct can_filter filter;
+	int i;
 
-#ifdef CONFIG_CAN_TEST_SEND
-	struct can* can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
+#ifdef CONFIG_CAN_TEST_RECV
+	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
 	CONFIG_ASSERT(can0);
 
-	struct can_msg msg = {
+	filter = (struct can_filter) {
+		.id = 0x4AB,
+		.mask = 0x00F
+	};
+
+	filter_id = can_registerFilter(can0, &filter);
+	CONFIG_ASSERT(filter_id >= 0);
+
+	for (;;) {
+		PRINTF("waiting for incoming messages ...\n");
+		ret = can_recv(can0, filter_id, &msg, 1000 / portTICK_PERIOD_MS);
+		if (ret == 0) {
+			PRINTF("msg received (length=%d):", msg.length);
+
+			for (i=0; i<msg.length; i++) {
+				PRINTF(" %02x", msg.data[i]);
+			}
+
+			PRINTF("\n");
+		} else {
+			PRINTF("no message received\n");
+		}
+	}
+#endif
+
+#ifdef CONFIG_CAN_TEST_SEND
+	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
+	CONFIG_ASSERT(can0);
+
+	msg = (struct can_msg) {
 		.id = 0x4AB,
 		.length = 8,
 		.data = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77}

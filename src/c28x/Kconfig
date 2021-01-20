@@ -13,6 +13,8 @@ if CAN_TEST=y
 		bool "Toggle TX Pins"
 	config CAN_TEST_SEND
 		bool "Send message"
+	config CAN_TEST_RECV
+		bool "Receive message"
 endif
 config CAN_DISABLE
 	bool "Disable CAN"
