@@ -23,6 +23,9 @@ static void can_task(void *data) {
 	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
 	CONFIG_ASSERT(can0);
 
+	ret = can_up(can0);
+	CONFIG_ASSERT(ret == 0);
+
 	filter = (struct can_filter) {
 		.id = 0x4AB,
 		.mask = 0x00F
@@ -51,6 +54,9 @@ static void can_task(void *data) {
 #ifdef CONFIG_CAN_TEST_SEND
 	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
 	CONFIG_ASSERT(can0);
+
+	ret = can_up(can0);
+	CONFIG_ASSERT(ret == 0);
 
 	msg = (struct can_msg) {
 		.id = 0x4AB,
