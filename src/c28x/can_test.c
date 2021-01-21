@@ -28,7 +28,9 @@ static void can_task(void *data) {
 	int32_t filter_id;
 	struct can_filter filter;
 	int i;
+#ifdef CONFIG_CAN_TEST_ECHO
 	OS_DEFINE_QUEUE(can_test_messages, CONFIG_CAN_TEST_ECHO_QUEUE_LENGTH, sizeof(struct can_msg));
+#endif
 
 #ifdef CONFIG_CAN_TEST_ECHO
 	can_test_messages = OS_CREATE_QUEUE(CONFIG_CAN_TEST_ECHO_QUEUE_LENGTH, sizeof(struct can_msg), can_test_messages);
