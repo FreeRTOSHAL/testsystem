@@ -67,9 +67,9 @@ static void can_task(void *data) {
 		ret = xQueueReceive(can_test_messages, &msg, 1000 / portTICK_PERIOD_MS);
 		if (ret == pdTRUE) {
 			if (msg.id < 0x800) {
-				PRINTF("msg received from %03lx (length=%d):", msg.id, msg.length);
+				PRINTF("msg received from %03lx @ t=%lu (length=%d):", msg.id, msg.ts, msg.length);
 			} else {
-				PRINTF("msg received from %08lx (length=%d):", msg.id, msg.length);
+				PRINTF("msg received from %08lx @ t=%lu (length=%d):", msg.id, msg.ts, msg.length);
 			}
 
 			for (i=0; i<msg.length; i++) {
