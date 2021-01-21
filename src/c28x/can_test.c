@@ -13,8 +13,12 @@
 
 static bool can_test_msg_received (struct can *can, struct can_msg *msg, void *data) {
 	BaseType_t pxHigherPriorityTaskWoken;
+	int ret;
 
 	(void) xQueueSendToBackFromISR(data, msg, &pxHigherPriorityTaskWoken);
+
+	ret = can_sendISR(can, msg);
+	CONFIG_ASSERT(ret == 0);
 
 	return pxHigherPriorityTaskWoken;
 }
@@ -52,9 +56,10 @@ static void can_task(void *data) {
 
 	can_setCallback(can0, filter_id, can_test_msg_received, can_test_messages);
 
-	PRINTF("waiting for incoming messages ...\n");
 	for (;;) {
-		ret = xQueueReceive(can_test_messages, &msg, portMAX_DELAY);
+		PRINTF("waiting for incoming messages ...\n");
+
+		ret = xQueueReceive(can_test_messages, &msg, 1000 / portTICK_PERIOD_MS);
 		if (ret == pdTRUE) {
 			PRINTF("msg received (length=%d):", msg.length);
 
@@ -63,14 +68,6 @@ static void can_task(void *data) {
 			}
 
 			PRINTF("\n");
-
-			PRINTF("transmitting it back ...\n");
-			ret = can_send(can0, &msg, 1000 / portTICK_PERIOD_MS);
-			if (ret >= 0) {
-				PRINTF("transmission done!\n");
-			} else {
-				PRINTF("transmission failed!\n");
-			}
 		}
 	}
 #endif
