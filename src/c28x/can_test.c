@@ -23,6 +23,11 @@ static bool can_test_msg_received (struct can *can, struct can_msg *msg, void *d
 	return pxHigherPriorityTaskWoken;
 }
 
+static bool can_test_error (struct can *can, can_error_t err, can_errorData_t data, void *user_data) {
+	CONFIG_ASSERT(0);
+	return false;
+}
+
 
 static void can_task(void *data) {
 	TickType_t pxPreviousWakeTime = xTaskGetTickCount();
@@ -39,15 +44,15 @@ static void can_task(void *data) {
 #ifdef CONFIG_CAN_TEST_ECHO
 	can_test_messages = OS_CREATE_QUEUE(CONFIG_CAN_TEST_ECHO_QUEUE_LENGTH, sizeof(struct can_msg), can_test_messages);
 
-	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
+	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, can_test_error, NULL);
 	CONFIG_ASSERT(can0);
 
 	ret = can_up(can0);
 	CONFIG_ASSERT(ret == 0);
 
 	filter = (struct can_filter) {
-		.id = 0x4AB,
-		.mask = 0x00F
+		.id = 0x002C0000UL,
+		.mask = 0x002FFFFEUL
 	};
 
 
@@ -61,7 +66,11 @@ static void can_task(void *data) {
 
 		ret = xQueueReceive(can_test_messages, &msg, 1000 / portTICK_PERIOD_MS);
 		if (ret == pdTRUE) {
-			PRINTF("msg received (length=%d):", msg.length);
+			if (msg.id < 0x800) {
+				PRINTF("msg received from %03lx (length=%d):", msg.id, msg.length);
+			} else {
+				PRINTF("msg received from %08lx (length=%d):", msg.id, msg.length);
+			}
 
 			for (i=0; i<msg.length; i++) {
 				PRINTF(" %02x", msg.data[i]);
