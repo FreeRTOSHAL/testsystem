@@ -51,7 +51,18 @@ static void can_task(void *data) {
 	CONFIG_ASSERT(ret == 0);
 
 	filter = (struct can_filter) {
-		.id = 0x002C0000UL,
+		.id = 0x4ABUL,
+		.mask = 0xFFCUL
+	};
+
+
+	filter_id = can_registerFilter(can0, &filter);
+	CONFIG_ASSERT(filter_id >= 0);
+
+	can_setCallback(can0, filter_id, can_test_msg_received, can_test_messages);
+
+	filter = (struct can_filter) {
+		.id = CAN_EFF_FLAG | 0x002C0000UL,
 		.mask = 0x002FFFFEUL
 	};
 
@@ -66,10 +77,10 @@ static void can_task(void *data) {
 
 		ret = xQueueReceive(can_test_messages, &msg, 1000 / portTICK_PERIOD_MS);
 		if (ret == pdTRUE) {
-			if (msg.id < 0x800) {
-				PRINTF("msg received from %03lx @ t=%lu (length=%d):", msg.id, msg.ts, msg.length);
+			if (!(msg.id & CAN_EFF_FLAG)) {
+				PRINTF("msg received from %03lx @ t=%lu (length=%d):", msg.id & CAN_SFF_MASK, msg.ts, msg.length);
 			} else {
-				PRINTF("msg received from %08lx @ t=%lu (length=%d):", msg.id, msg.ts, msg.length);
+				PRINTF("msg received from %08lx @ t=%lu (length=%d):", msg.id & CAN_EFF_MASK, msg.ts, msg.length);
 			}
 
 			for (i=0; i<msg.length; i++) {
