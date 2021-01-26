@@ -194,6 +194,14 @@ int main() {
     printf("testing CAN!\n");
     can_test();
 #endif
+#ifdef CONFIG_CAN_DISABLE
+	{
+		struct gpio *gpio = gpio_init(GPIO_ID);
+		struct gpio_pin *cantx = gpioPin_init(gpio,PAD_DCAN1_TX, GPIO_OUTPUT, GPIO_PULL_UP);
+		CONFIG_ASSERT(cantx);
+		gpioPin_setPin(cantx);
+	}
+#endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler();
 	for(;;);

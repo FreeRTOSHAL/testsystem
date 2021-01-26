@@ -38,4 +38,8 @@ config CAN_TEST
     bool "CAN Test"
     depends on CAN
     default n
+config CAN_DISABLE
+	bool "Disable CAN"
+	help
+		set CAN TX to high
 endmenu
