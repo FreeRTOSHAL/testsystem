@@ -171,6 +171,3 @@ void can_test() {
 	CONFIG_ASSERT(ret == pdPASS);
 }
 
-
-// vim: noexpandtab ts=4 sts=4 sw=4
-
