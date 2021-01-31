@@ -44,7 +44,7 @@ static void can_task(void *data) {
 #ifdef CONFIG_CAN_TEST_ECHO
 	can_test_messages = OS_CREATE_QUEUE(CONFIG_CAN_TEST_ECHO_QUEUE_LENGTH, sizeof(struct can_msg), can_test_messages);
 
-	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, can_test_error, NULL);
+	can0 = can_init(ECAN0_ID, CONFIG_CAN_TEST_BITRATE, NULL, false, can_test_error, NULL);
 	CONFIG_ASSERT(can0);
 
 	ret = can_up(can0);
@@ -93,7 +93,7 @@ static void can_task(void *data) {
 #endif
 
 #ifdef CONFIG_CAN_TEST_RECV
-	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
+	can0 = can_init(ECAN0_ID, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
 	CONFIG_ASSERT(can0);
 
 	ret = can_up(can0);
@@ -125,7 +125,7 @@ static void can_task(void *data) {
 #endif
 
 #ifdef CONFIG_CAN_TEST_SEND
-	can0 = can_init(0, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
+	can0 = can_init(ECAN0_ID, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
 	CONFIG_ASSERT(can0);
 
 	ret = can_up(can0);
