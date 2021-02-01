@@ -10,6 +10,123 @@
 #define PRINTF(...)			printf(__VA_ARGS__)
 
 
+const char *CAN_ERR_NAMES[] = {
+	"CAN_ERR_CTRL",
+	"CAN_ERR_PROT",
+	"CAN_ERR_TRX"
+	"CAN_ERR_ACK",
+	"CAN_ERR_BUSOFF",
+	"CAN_ERR_BUSERROR",
+	"CAN_ERR_RESTARTED"
+};
+
+const char *CAN_ERR_DATA_NAMES[] = {
+	// controller
+	// offset: 0
+	"CAN_ERR_CRTL_UNSPEC",
+	"CAN_ERR_CRTL_RX_OVERFLOW",
+	"CAN_ERR_CRTL_TX_OVERFLOW",
+	"CAN_ERR_CRTL_RX_WARNING",
+	"CAN_ERR_CRTL_TX_WARNING",
+	"CAN_ERR_CRTL_RX_PASSIVE",
+	"CAN_ERR_CRTL_TX_PASSIVE",
+	"CAN_ERR_CRTL_ACTIVE",
+
+	// protocol
+	// offset: 8
+	"CAN_ERR_PROT_UNSPEC",
+	"CAN_ERR_PROT_BIT",
+	"CAN_ERR_PROT_FORM",
+	"CAN_ERR_PROT_STUFF",
+	"CAN_ERR_PROT_BIT0",
+	"CAN_ERR_PROT_BIT1",
+	"CAN_ERR_PROT_OVERLOAD",
+	"CAN_ERR_PROT_ACTIVE",
+	"CAN_ERR_PROT_TX",
+	"CAN_ERR_UNKNOWN",
+	"CAN_ERR_UNKNOWN",
+	"CAN_ERR_UNKNOWN",
+	"CAN_ERR_UNKNOWN",
+	"CAN_ERR_UNKNOWN",
+	"CAN_ERR_UNKNOWN",
+	"CAN_ERR_UNKNOWN",
+
+	// protocol (location)
+	// offset: 24
+	"CAN_ERR_PROT_LOC_UNSPEC",
+	"CAN_ERR_PROT_LOC_SOF",
+	"CAN_ERR_PROT_LOC_ID28_21",
+	"CAN_ERR_PROT_LOC_ID20_18",
+	"CAN_ERR_PROT_LOC_SRTR",
+	"CAN_ERR_PROT_LOC_IDE",
+	"CAN_ERR_PROT_LOC_ID17_13",
+	"CAN_ERR_PROT_LOC_ID12_05",
+	"CAN_ERR_PROT_LOC_ID04_00",
+	"CAN_ERR_PROT_LOC_RTR",
+	"CAN_ERR_PROT_LOC_RES1",
+	"CAN_ERR_PROT_LOC_RES0",
+	"CAN_ERR_PROT_LOC_DLC",
+	"CAN_ERR_PROT_LOC_DATA",
+	"CAN_ERR_PROT_LOC_CRC_SEQ",
+	"CAN_ERR_PROT_LOC_CRC_DEL",
+	"CAN_ERR_PROT_LOC_ACK",
+	"CAN_ERR_PROT_LOC_ACK_DEL",
+	"CAN_ERR_PROT_LOC_EOF",
+	"CAN_ERR_PROT_LOC_INTERM",
+	"CAN_ERR_UNKNOWN",
+	"CAN_ERR_UNKNOWN",
+	"CAN_ERR_UNKNOWN",
+	"CAN_ERR_UNKNOWN",
+
+	// transceiver
+	// offset: 48
+	"CAN_ERR_TRX_UNSPEC",
+	"CAN_ERR_TRX_CANH_NO_WIRE",
+	"CAN_ERR_TRX_CANH_SHORT_TO_BAT",
+	"CAN_ERR_TRX_CANH_SHORT_TO_VCC",
+	"CAN_ERR_TRX_CANH_SHORT_TO_GND",
+	"CAN_ERR_TRX_CANL_NO_WIRE",
+	"CAN_ERR_TRX_CANL_SHORT_TO_BAT",
+	"CAN_ERR_TRX_CANL_SHORT_TO_VCC",
+	"CAN_ERR_TRX_CANL_SHORT_TO_GND",
+	"CAN_ERR_TRX_CANL_SHORT_TO_CANH",
+};
+
+
+static void print_can_error (can_error_t err, can_errorData_t err_data) {
+	int i;
+
+	for (i=0; err; i++) {
+		if (err & 1) {
+			if (i < ARRAY_SIZE(CAN_ERR_NAMES)) {
+				PRINTF("CAN error: %s\n", CAN_ERR_NAMES[i]);
+			} else {
+				PRINTF("CAN error: unknown, bit=%d\n", i);
+			}
+		}
+
+		err >>= 1;
+	}
+
+	for (i=0; err_data; i++) {
+		if (err_data & 1) {
+			if (i < ARRAY_SIZE(CAN_ERR_DATA_NAMES)) {
+				PRINTF("CAN error (data): %s\n", CAN_ERR_DATA_NAMES[i]);
+			} else {
+				PRINTF("CAN error (data): unknown, bit=%d\n", i);
+			}
+		}
+
+		err_data >>= 1;
+	}
+}
+
+
+
+
+can_error_t can_err = 0;
+can_errorData_t can_err_data = 0;
+
 
 static bool can_test_msg_received (struct can *can, struct can_msg *msg, void *data) {
 	BaseType_t pxHigherPriorityTaskWoken;
@@ -24,7 +141,9 @@ static bool can_test_msg_received (struct can *can, struct can_msg *msg, void *d
 }
 
 static bool can_test_error (struct can *can, can_error_t err, can_errorData_t data, void *user_data) {
-	CONFIG_ASSERT(0);
+	can_err |= err;
+	can_err_data |= data;
+
 	return false;
 }
 
@@ -89,11 +208,22 @@ static void can_task(void *data) {
 
 			PRINTF("\n");
 		}
+
+		if (can_err) {
+			asm(" DINT");
+			uint64_t tmp_can_err = can_err;
+			uint64_t tmp_can_err_data = can_err_data;
+			can_err = 0;
+			can_err_data = 0;
+			asm(" EINT");
+
+			print_can_error(tmp_can_err, tmp_can_err_data);
+		}
 	}
 #endif
 
 #ifdef CONFIG_CAN_TEST_RECV
-	can0 = can_init(ECAN0_ID, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
+	can0 = can_init(ECAN0_ID, CONFIG_CAN_TEST_BITRATE, NULL, false, can_test_error, NULL);
 	CONFIG_ASSERT(can0);
 
 	ret = can_up(can0);
@@ -121,11 +251,22 @@ static void can_task(void *data) {
 		} else {
 			PRINTF("no message received\n");
 		}
+
+		if (can_err) {
+			asm(" DINT");
+			uint64_t tmp_can_err = can_err;
+			uint64_t tmp_can_err_data = can_err_data;
+			can_err = 0;
+			can_err_data = 0;
+			asm(" EINT");
+
+			print_can_error(tmp_can_err, tmp_can_err_data);
+		}
 	}
 #endif
 
 #ifdef CONFIG_CAN_TEST_SEND
-	can0 = can_init(ECAN0_ID, CONFIG_CAN_TEST_BITRATE, NULL, false, NULL, NULL);
+	can0 = can_init(ECAN0_ID, CONFIG_CAN_TEST_BITRATE, NULL, false, can_test_error, NULL);
 	CONFIG_ASSERT(can0);
 
 	ret = can_up(can0);
@@ -138,7 +279,23 @@ static void can_task(void *data) {
 	};
 
 	for (;;) {
-		can_send(can0, &msg, 1000 / portTICK_PERIOD_MS);
+		PRINTF("transmit message ...\n");
+		ret = can_send(can0, &msg, 1000 / portTICK_PERIOD_MS);
+		if (ret < 0) {
+			PRINTF("error: send failed!\n");
+		}
+
+		if (can_err) {
+			asm(" DINT");
+			uint64_t tmp_can_err = can_err;
+			uint64_t tmp_can_err_data = can_err_data;
+			can_err = 0;
+			can_err_data = 0;
+			asm(" EINT");
+
+			print_can_error(tmp_can_err, tmp_can_err_data);
+		}
+
 		vTaskDelayUntil(&pxPreviousWakeTime, 1000 / portTICK_PERIOD_MS);
 	}
 #endif
