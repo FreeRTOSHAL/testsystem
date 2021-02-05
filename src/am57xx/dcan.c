@@ -141,4 +141,3 @@ void can_test() {
 	//dcan1_gpio();
 
 }
-// vim: noexpandtab ts=4 sts=4 sw=4
