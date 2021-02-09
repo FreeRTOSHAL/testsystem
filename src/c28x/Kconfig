@@ -27,4 +27,7 @@ config CAN_DISABLE
 	bool "Disable CAN"
 	help
 		set CAN TX to high
+config EPWN_TEST
+	bool "EPWN Test"
+	default y
 endmenu
