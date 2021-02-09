@@ -6,8 +6,22 @@ config CAN_TEST
 	bool "CAN Test"
 	default n
 if CAN_TEST=y
+    config CAN_TEST_BITRATE
+        int "CAN bitrate"
+        default 500000
 	config CAN_TEST_TOGGLE_PIN
 		bool "Toggle TX Pins"
+	config CAN_TEST_SEND
+		bool "Send message"
+	config CAN_TEST_RECV
+		bool "Receive message"
+	config CAN_TEST_ECHO
+		bool "Receive message and send it back"
+    if CAN_TEST_ECHO=y
+	config CAN_TEST_ECHO_QUEUE_LENGTH
+		int "Length of the queue of the received messages"
+        default 4
+    endif
 endif
 config CAN_DISABLE
 	bool "Disable CAN"
