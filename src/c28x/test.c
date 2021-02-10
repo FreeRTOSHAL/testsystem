@@ -127,11 +127,12 @@ int main() {
 #ifdef CONFIG_CAN_TEST
 	can_test();
 #endif
-#ifdef CONFIG_CAN_TEST
-	epwn_test();
+
+#ifdef CONFIG_EPWM_TEST
+	epwm_test();
 #endif
 	
-	
+	//epwm_test();	
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
 	for(;;);
