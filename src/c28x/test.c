@@ -16,7 +16,7 @@
 #include <gpio.h>
 #include <iomux.h>
 #include <can_test.h>
-
+#include <epwm_test.h>
 void vApplicationMallocFailedHook( void ) {
 	CONFIG_ASSERT(0);
 }
@@ -128,6 +128,11 @@ int main() {
 	can_test();
 #endif
 
+#ifdef CONFIG_EPWM_TEST
+	epwm_test();
+#endif
+	
+	//epwm_test();	
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
 	for(;;);
