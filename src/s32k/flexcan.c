@@ -13,7 +13,6 @@ void can_task(void *data) {
 	int32_t filterID;
 	struct can_msg msg = {
 		.id = 0x123,
-		.req = false,
 		.length = 8,
 		.data = {
 			0x12,
@@ -44,15 +43,19 @@ void can_task(void *data) {
 		CONFIG_ASSERT(ret == 0);
 		CONFIG_ASSERT(msg_recv.id == msg.id);
 		CONFIG_ASSERT(msg_recv.length == msg.length);
-		CONFIG_ASSERT(msg_recv.req == msg.req);
 		for (i = 0; i < 8; i++) {
 			CONFIG_ASSERT(msg_recv.data[i] == msg.data[i]);
 		}
 	}
 }
 
+bool error_callback(struct can *can, can_error_t error, can_errorData_t data, void *userData) {
+	printf("CAN Error / Waring: error: %u data: %u\n", error, data);
+	return false;
+}
+
 void can_test() {
-	struct can *can = can_init(FLEXCAN0_ID, 500000, NULL, false);
+	struct can *can = can_init(FLEXCAN0_ID, 500000, NULL, false, error_callback, NULL);
 	CONFIG_ASSERT(can);
 
 	OS_CREATE_TASK(can_task, "CAN Test", 512, can, 2, taskCAN);
