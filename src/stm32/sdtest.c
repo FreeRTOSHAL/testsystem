@@ -19,7 +19,7 @@ static void testReadWrite() {
 		/* read 4K from card */
 		ret = sd_read(sd, CMD(18), 0, ARRAY_SIZE(data), (uint32_t *) data, 1000 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret == 0);
-		/* stop transver */
+		/* stop transfer */
 		ret = sd_sendCommand(sd, CMD(12), 0, NULL, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret == 0);
 #else
@@ -28,14 +28,14 @@ static void testReadWrite() {
 		/* Write Back test */
 		ret = sd_write(sd, CMD(25), 0, ARRAY_SIZE(data), (uint32_t *) data, 1000 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret == 0);
-		/* stop transver */
+		/* stop transfer */
 		ret = sd_sendCommand(sd, CMD(12), 0, NULL, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret == 0);
 		vTaskDelay(500 / portTICK_PERIOD_MS);
 		/* read 4K from card */
 		ret = sd_read(sd, CMD(18), 0, ARRAY_SIZE(data2), (uint32_t *) data2, 1000 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret == 0);
-		/* stop transver */
+		/* stop transfer */
 		ret = sd_sendCommand(sd, CMD(12), 0, NULL, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret == 0);
 		ret = memcmp(data, data2, ARRAY_SIZE(data));
@@ -84,7 +84,7 @@ void sdtest_task(void *d) {
 		ret = sd_sendCommand(sd, CMD(3), 0, &res, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret == 0);
 		rca = res.data[3] & 0xFFFF0000;
-		/* Set Card is transver mode */
+		/* Set Card is transfer mode */
 		ret = sd_sendCommand(sd, CMD(7), rca, 0, 100 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret == 0);
 	}

@@ -20,10 +20,10 @@ void spiTask(void *data) {
 			uint16_t recvData[] = {0x4243, 0x4445};
 			int32_t ret;
 			printf("MCU Test\n");
-			ret = spiSlave_transver(slave[0], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[0], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
-			ret = spiSlave_transver(slave[0], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[0], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
 		}
@@ -34,10 +34,10 @@ void spiTask(void *data) {
 			uint16_t recvData[] = {0x4243, 0x4445};
 			int32_t ret;
 			printf("LSM330DLC Test\n");
-			ret = spiSlave_transver(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
-			ret = spiSlave_transver(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
 		}
@@ -47,10 +47,10 @@ void spiTask(void *data) {
 			uint16_t recvData[] = {0x4243, 0x4445};
 			int32_t ret;
 			printf("LSM330DLC 2 Test\n");
-			ret = spiSlave_transver(slave[2], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[2], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
-			ret = spiSlave_transver(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[1], sendData, recvData, sizeof(sendData) / sizeof(uint16_t), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: 0x%x 0x%x\n", recvData[0], recvData[1]);
 		}

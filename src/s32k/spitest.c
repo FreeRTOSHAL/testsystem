@@ -31,20 +31,20 @@ static uint8_t crc7(uint16_t *data, size_t len)
 struct gpio_pin *cspin;
 #endif
 
-static int32_t transver(struct spi_slave *slave, uint16_t *send, uint16_t *recv, int32_t len) {
+static int32_t transfer(struct spi_slave *slave, uint16_t *send, uint16_t *recv, int32_t len) {
 	int32_t ret = 0;
 	int i;
 #ifdef CONFIG_SPI_TEST_SINGEL_BYTE
 	gpioPin_clearPin(cspin);
 	for (i = 0; i < len; i++) {
-		ret = spiSlave_transver(slave, &send[i], &recv[i], 1, 1000 / portTICK_PERIOD_MS);
+		ret = spiSlave_transfer(slave, &send[i], &recv[i], 1, 1000 / portTICK_PERIOD_MS);
 		if (ret < 0) {
 			return ret;
 		}
 	}
 	gpioPin_setPin(cspin);
 #else
-	ret = spiSlave_transver(slave, send, recv, len, 1000 / portTICK_PERIOD_MS);
+	ret = spiSlave_transfer(slave, send, recv, len, 1000 / portTICK_PERIOD_MS);
 #endif
 	return ret;
 }
@@ -64,7 +64,7 @@ int32_t sendCommand(struct spi_slave *slave, int8_t cmd, int32_t arg) {
 	send[SD_COMMAND_OFFSET + 3] = (arg >> 8) & 0xFF;
 	send[SD_COMMAND_OFFSET + 4] = arg & 0xFF;
 	send[SD_COMMAND_OFFSET + 5] = (crc7((send + SD_COMMAND_OFFSET), 5) << 1) | BIT(0) /* bit 0 is set every time */;
-	ret = transver(slave, send, recv, len);
+	ret = transfer(slave, send, recv, len);
 	CONFIG_ASSERT(ret >= 0);
 	//printf("send: ");
 	/*for (i = 0; i < len; i++) {
@@ -125,12 +125,12 @@ void spiTask(void *s) {
 		uint16_t send[RTC_MSG_LEN];
 		uint16_t recv[RTC_MSG_LEN];
 		int i;
-		printf("Read Contoll bytes from RTC\n");
-		/* try to read Contoll the 3 bytes */
+		printf("Read control bytes from RTC\n");
+		/* try to read control the 3 bytes */
 		memset(send, 0xFF, len * sizeof(uint16_t)); /* fill all bytes with 0xFF */
 		memset(recv, 0xFF, len * sizeof(uint16_t)); /* fill all bytes with 0xFF */
 		send[0] = BIT(7) /* read */ | BIT(5) /* Is every time set */ | 0 /* start with address 0 */;
-		ret = spiSlave_transver(slaves[2], send, recv, len, 1000 / portTICK_PERIOD_MS);
+		ret = spiSlave_transfer(slaves[2], send, recv, len, 1000 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret >= 0);
 		printf("send: ");
 		for (i = 0; i < len; i++) {

@@ -29,27 +29,11 @@ void spiTask(void *data) {
 			uint16_t sendData[] = {(0x75 | BIT(7)), 0xFF};
 			uint16_t recvData[] = {0x4243, 0x4445};
 			printf("MPU Test\n");
-			ret = spiSlave_transver(slave[0], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[0], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: ");
 			printHex(recvData, ARRAY_SIZE(recvData));
-			ret = spiSlave_transver(slave[0], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
-			CONFIG_ASSERT(ret == 0);
-			printf("recv: ");
-			printHex(recvData, ARRAY_SIZE(recvData));
-		}
-		{
-			int32_t ret;
-			uint16_t sendData[32];
-			uint16_t recvData[ARRAY_SIZE(sendData)];
-			memset(sendData, 0xFF, sizeof(sendData) * sizeof(uint16_t));
-			memset(sendData, 0xFF, sizeof(sendData) * sizeof(uint16_t));
-			printf("ADC Test len: %d\n", ARRAY_SIZE(sendData));
-			ret = spiSlave_transver(slave[1], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
-			CONFIG_ASSERT(ret == 0);
-			printf("recv: ");
-			printHex(recvData, ARRAY_SIZE(recvData));
-			ret = spiSlave_transver(slave[1], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[0], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: ");
 			printHex(recvData, ARRAY_SIZE(recvData));
@@ -61,11 +45,27 @@ void spiTask(void *data) {
 			memset(sendData, 0xFF, sizeof(sendData) * sizeof(uint16_t));
 			memset(sendData, 0xFF, sizeof(sendData) * sizeof(uint16_t));
 			printf("ADC Test len: %d\n", ARRAY_SIZE(sendData));
-			ret = spiSlave_transver(slave[2], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[1], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: ");
 			printHex(recvData, ARRAY_SIZE(recvData));
-			ret = spiSlave_transver(slave[2], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
+			ret = spiSlave_transfer(slave[1], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
+			CONFIG_ASSERT(ret == 0);
+			printf("recv: ");
+			printHex(recvData, ARRAY_SIZE(recvData));
+		}
+		{
+			int32_t ret;
+			uint16_t sendData[32];
+			uint16_t recvData[ARRAY_SIZE(sendData)];
+			memset(sendData, 0xFF, sizeof(sendData) * sizeof(uint16_t));
+			memset(sendData, 0xFF, sizeof(sendData) * sizeof(uint16_t));
+			printf("ADC Test len: %d\n", ARRAY_SIZE(sendData));
+			ret = spiSlave_transfer(slave[2], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
+			CONFIG_ASSERT(ret == 0);
+			printf("recv: ");
+			printHex(recvData, ARRAY_SIZE(recvData));
+			ret = spiSlave_transfer(slave[2], sendData, recvData, ARRAY_SIZE(sendData), 1000 / portTICK_PERIOD_MS);
 			CONFIG_ASSERT(ret == 0);
 			printf("recv: ");
 			printHex(recvData, ARRAY_SIZE(recvData));

@@ -30,7 +30,7 @@ void spitest_task(void *data) {
 		recv[0] = 0x1234;
 		send[1] = 0x3456;
 		recv[1] = 0x3456;
-		ret = spiSlave_transver(slave, send, recv, 2, 1000 / portTICK_PERIOD_MS);
+		ret = spiSlave_transfer(slave, send, recv, 2, 1000 / portTICK_PERIOD_MS);
 		CONFIG_ASSERT(ret >= 0);
 		printf("recvData: %d %d\n", recv[0], recv[1]);
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
