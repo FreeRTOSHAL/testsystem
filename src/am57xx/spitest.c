@@ -88,7 +88,7 @@ void spitest_init() {
 		.wdelay = 0,
 		.cs_hold = 8,
 		.cs_delay = 500,
-		.bautrate = 500000
+		.baudrate = 500000
 	};
 	printf("Init SPI\n");
 	spi = spi_init(SPI4_ID, SPI_3WIRE_CS, NULL);

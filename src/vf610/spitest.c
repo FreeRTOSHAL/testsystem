@@ -74,7 +74,7 @@ void spitest_init() {
 		.wdelay = 0,
 		.cs_hold = 8,
 		.cs_delay = 500,
-		.bautrate = 500000,
+		.baudrate = 500000,
 	};
 	spi = spi_init(1, SPI_3WIRE_CS, NULL);
 	CONFIG_ASSERT(spi != NULL);
@@ -102,7 +102,7 @@ void spitest_init() {
 		.wdelay = 0,
 		.cs_hold = 8,
 		.cs_delay = 500,
-		.bautrate = 500000,
+		.baudrate = 500000,
 	};
 	spi = spi_init(1);
 	CONFIG_ASSERT(spi != NULL);

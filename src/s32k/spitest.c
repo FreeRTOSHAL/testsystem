@@ -165,7 +165,7 @@ void spitest_init() {
 			.wdelay = 8,
 			.cs_hold = 8,
 			.cs_delay = 100, 
-			.bautrate = 100000,
+			.baudrate = 100000,
 		};
 		/* MMC / SD */
 		slaves[0] = spiSlave_init(spi, &opt);
@@ -196,7 +196,7 @@ void spitest_init() {
 			.wdelay = 8,
 			.cs_hold = 8,
 			.cs_delay = 100, 
-			.bautrate = 100000,
+			.baudrate = 100000,
 		};
 		/* LTC */
 		slaves[1] = spiSlave_init(spi, &opt);
@@ -216,7 +216,7 @@ void spitest_init() {
 			.wdelay = 8,
 			.cs_hold = 8,
 			.cs_delay = 100,
-			.bautrate = 100000,
+			.baudrate = 100000,
 		};
 		/* RTC */
 		slaves[2] = spiSlave_init(spi, &opt);

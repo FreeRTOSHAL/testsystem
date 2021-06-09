@@ -184,7 +184,7 @@ int main() {
 	int32_t ret;
 	ret = irq_init();
 	CONFIG_ASSERT(ret == 0);
-#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_vTaskDelayUntil) && !defined(CONFIG_TIMER_TEST)
+#if (defined(CONFIG_GPIO) || defined(CONFIG_PWM)) && defined(CONFIG_INCLUDE_xTaskDelayUntil) && !defined(CONFIG_TIMER_TEST)
 	struct pwm *pwm = NULL;
 #endif
 #ifdef CONFIG_UART

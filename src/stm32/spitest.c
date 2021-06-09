@@ -19,7 +19,7 @@ void spitest_task(void *data) {
 		.wdelay = 1,
 		.cs_hold = 8,
 		.cs_delay = 500,
-		.bautrate = 328125,
+		.baudrate = 328125,
 	};
 	int ret;
 	struct spi_slave *slave = spiSlave_init(spi, &opt);
