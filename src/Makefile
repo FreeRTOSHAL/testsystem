@@ -5,3 +5,4 @@ obj-$(CONFIG_MACH_AM57xx) += am57xx/
 obj-$(CONFIG_MACH_LINUX) += linux/
 obj-$(CONFIG_MACH_S32K) += s32k/
 obj-$(CONFIG_MACH_C28X) += c28x/
+obj-$(CONFIG_MACH_RISCV_QEMU)+=riscv-qemu/

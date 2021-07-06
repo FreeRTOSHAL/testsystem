@@ -1,0 +1,20 @@
+menu "Application Config"
+config APP_INCLUDE
+	string
+	default "-Iinclude/riscv-qemu"
+choice
+	prompt "stdout UART"
+	depends on UART
+	help
+		Select default UART
+	config QEMU_RISCV_STDOUT_UART0
+		bool "UART 0"
+		depends on MACH_NS16550
+endchoice
+config UART_TEST
+	bool "UART Test"
+	default n
+config TIMER_TEST
+	bool "Timer Test"
+	default n
+endmenu

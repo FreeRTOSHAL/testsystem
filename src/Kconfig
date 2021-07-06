@@ -19,3 +19,6 @@ endif
 if MACH_C28X
 source src/c28x/Kconfig
 endif
+if MACH_RISCV_QEMU
+source src/riscv-qemu/Kconfig
+endif
