@@ -35,7 +35,7 @@ static void timerTask(void *data) {
 		time = timer_getTime(timer);
 		timeh = time >> 32;
 		timel = time & 0xFFFFFFFFULL;
-		printf("time: %lu %lu\n", timeh , timel);
+		printf("time: %lu %lu %lu\n", lastWakeUpTime, timeh , timel);
 		vTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
