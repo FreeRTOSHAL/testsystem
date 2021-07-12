@@ -10,6 +10,9 @@ choice
 	config QEMU_RISCV_STDOUT_UART0
 		bool "UART 0"
 		depends on MACH_NS16550
+	config SBI_STDOUT_UART
+		bool "SBI UART"
+		depends on ARCH_SBI_UART
 endchoice
 config UART_TEST
 	bool "UART Test"

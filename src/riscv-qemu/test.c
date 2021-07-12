@@ -17,6 +17,7 @@
 #include <timer.h>
 #include <uarttest.h>
 #include <timertest.h>
+#include <sbi_uart.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -69,6 +70,9 @@ int main() {
 # ifdef CONFIG_QEMU_RISCV_STDOUT_UART0
 	struct uart *uart = uart_init(UART0_ID, 115200);
 # endif
+# ifdef CONFIG_SBI_STDOUT_UART
+	struct uart *uart = uart_init(SBI_UART_ID, 115200);
+# endif
 	CONFIG_ASSERT(uart != NULL);
 # ifdef CONFIG_NEWLIB
 	ret = newlib_init(uart, uart);
@@ -92,6 +96,7 @@ int main() {
 #ifdef CONFIG_TIMER_TEST
 	timertest_init();
 #endif
+	PRINTF("Running on Hart ID: %u\n", irq_getCPUID());
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
 	for(;;);

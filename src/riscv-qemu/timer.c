@@ -16,7 +16,7 @@ struct timer *timer;
 
 static bool irqhandle(struct timer *timer, void *data) {
 	(void) data;
-	printf("callback\n");
+	printf("timer interrupt\n");
 	return false;
 }
 
