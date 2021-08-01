@@ -8,7 +8,6 @@ Set Jumper (J9) for Embedded Debbuing, debbuing over USB.
 For externel Debbuing unset Jumper (J9), waring incompatible with ARM Debugger!
 
 JTAG Pinout (J23): 
-|----|------------|
 |Pin | Function   |
 |----|------------|
 | 1  | JTAG_TCK   |
@@ -39,7 +38,6 @@ sudo ./bin/openocd --command "set DEVICE MPFS" --file board/microsemi-riscv.cfg
 After this, it is possible to connect an GDB on Port 3333. 
 
 With the GDB `thread` command it is possible to switch between the 5 Harts.
-|----------|------------------|
 | ThreadID |                  |
 |----------|------------------|
 | 1        | Monitor Core E51 |
