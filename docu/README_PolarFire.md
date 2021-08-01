@@ -9,6 +9,8 @@ For externel Debbuing unset Jumper (J9), waring incompatible with ARM Debugger!
 
 JTAG Pinout (J23): 
 |----|------------|
+|Pin | Function   |
+|----|------------|
 | 1  | JTAG_TCK   |
 | 2  | GND        | 
 | 3  | JTAG_TDO   | 
@@ -19,7 +21,6 @@ JTAG Pinout (J23):
 | 8  | JTAG_nTRST |
 | 9  | JTAG_TDI   | 
 | 10 | GND        | 
-|----|------------|
 
 Debugger Software
 -----------------
@@ -46,7 +47,6 @@ With the GDB `thread` command it is possible to switch between the 5 Harts.
 | 3        | U54 Core 2       | 
 | 4        | U54 Core 3       | 
 | 5        | U54 Core 4       | 
-|----------|------------------|
 
 With the Command `info thread` 
 It is possible with the command `info thread` to get the status of all cores. 
