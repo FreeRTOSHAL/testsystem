@@ -22,3 +22,6 @@ endif
 if MACH_RISCV_QEMU
 source src/riscv-qemu/Kconfig
 endif
+if MACH_POLARFIRE
+source src/polarfire/Kconfig
+endif
