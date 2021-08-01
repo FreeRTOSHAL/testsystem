@@ -20,4 +20,7 @@ config UART_TEST
 config TIMER_TEST
 	bool "Timer Test"
 	default n
+config FLOAT_TEST
+	bool "Float Test"
+	default n
 endmenu

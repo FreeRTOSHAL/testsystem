@@ -17,6 +17,7 @@
 #include <timer.h>
 #include <uarttest.h>
 #include <timertest.h>
+#include <floattest.h>
 #include <sbi_uart.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
@@ -95,6 +96,9 @@ int main() {
 #endif
 #ifdef CONFIG_TIMER_TEST
 	timertest_init();
+#endif
+#ifdef CONFIG_FLOAT_TEST
+	floattest_init();
 #endif
 	PRINTF("Running on Hart ID: %u\n", irq_getCPUID());
 	PRINTF("Start Scheduler\n");
