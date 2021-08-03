@@ -17,6 +17,11 @@ endchoice
 config UART_TEST
 	bool "UART Test"
 	default n
+	config UART_TEST_SBI
+		bool "Test SBI UART"
+		default n
+		depends on UART_TEST
+
 config TIMER_TEST
 	bool "Timer Test"
 	default n
