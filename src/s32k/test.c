@@ -44,14 +44,8 @@ bool userButtonISR(struct gpio_pin *pin, uint32_t pinID, void *data) {
 #endif
 
 int32_t initGPIO() {
-	struct gpio *gpio2;
 	gpio = gpio_init(GPIO_ID);
 	if (gpio == NULL) {
-		return -1;
-	}
-	/* Test if GET Dev work */
-	gpio2  = gpio_init(1);
-	if (gpio2 != NULL) {
 		return -1;
 	}
 #ifdef CONFIG_S32K144_EVM

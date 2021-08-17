@@ -24,6 +24,9 @@ choice
 endchoice
 choice
 	prompt "Test Board"
+	config S32K144_BASE
+		bool "S32K144 Base without GPIO and UART"
+		depends on S32K144
 	config S32K144_EVM
 		bool "S32K144_EVM"
 		depends on S32K144

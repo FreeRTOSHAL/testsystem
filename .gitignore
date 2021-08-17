@@ -6,6 +6,8 @@ include/config
 include/generated
 test
 test.bin
+test.img
+test.bin.gz
 docu/html
 docu/latex
 docu/man
