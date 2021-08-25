@@ -1,0 +1,14 @@
+menu "Application Config"
+config APP_INCLUDE
+	string
+#	default "-Iinclude/kv4x"
+choice
+	prompt "stdout UART"
+	depends on UART
+	help
+		Select default UART
+	config KV4X_STDOUT_SEMIHOSTING
+		bool "Semihosting UART"
+		depends on SEMIHOSTING_UART
+endchoice
+endmenu

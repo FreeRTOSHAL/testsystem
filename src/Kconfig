@@ -25,3 +25,6 @@ endif
 if MACH_POLARFIRE
 source src/polarfire/Kconfig
 endif
+if MACH_KV4X
+source src/kv4x/Kconfig
+endif
