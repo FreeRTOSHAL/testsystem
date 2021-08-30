@@ -23,6 +23,7 @@
 #include <pwm.h>
 #include <spitest.h>
 #include <cantest.h>
+#include <adctest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -215,7 +216,7 @@ int main() {
 #endif
 #if defined(CONFIG_PWM) && defined(CONFIG_MACH_S32K_FLEXTIMER1_PWM3_PTC15) && !defined(CONFIG_TIMER_TEST)
 	{
-		struct timer *timer = timer_init(FLEXTIMER1_ID, 128, 21000, 700);
+		struct timer *timer = timer_init(FLEXTIMER1_ID, 128, 21000, 0);
 		CONFIG_ASSERT(timer);
 		pwm = pwm_init(FLEXTIMER1_PWM3_PTC15_ID);
 		CONFIG_ASSERT(pwm);
@@ -245,6 +246,9 @@ int main() {
 #endif
 #ifdef CONFIG_CAN_TEST
 	can_test();
+#endif
+#ifdef CONFIG_ADC_TEST
+	adc_test();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();

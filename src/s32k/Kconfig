@@ -69,6 +69,10 @@ config SPI_TEST
 		depends on SPI_TEST
 		default n
 
+config ADC_TEST
+	bool "ADC Test"
+	depends on ADC
+
 config LTC6811_TEST
 	bool "LTC6811 Test"
 	depends on SPI

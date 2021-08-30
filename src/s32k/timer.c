@@ -11,6 +11,7 @@
 #include <devs.h>
 #include <pwm.h>
 #include <capture.h>
+#include <adctest.h>
 
 #define MAX_TIME 21000
 struct timer *timer;
@@ -24,11 +25,13 @@ struct capture *capture;
 #endif
 uint32_t rgbPins = BIT(0);
 uint32_t state = 0x0;
-uint64_t n = MAX_TIME / 2;
+float n = MAX_TIME / 2;
+uint32_t m;
 bool up = true;
 bool on = true;
 
 static bool irqhandle(struct timer *timer, void *data) {
+	float tmp;
 	(void) data;
 #ifndef CONFIG_TIMER_TEST_PWM
 	if (on) {
@@ -55,12 +58,16 @@ static bool irqhandle(struct timer *timer, void *data) {
 #endif
 	if (on) {
 		if (up) {
-			n+=100;
+			n+=0.05;
 		} else {
-			n-=100;
+			n-=0.05;
 		}
-		if (n >= (MAX_TIME - 200)) {
+		if (n >= 1.0) {
+			n = 1.0;
 			up = false;
+		} else if (n <= 0) {
+			n = 0.0;
+			up = true;
 			if (state == 7) {
 				state = 0;
 			}
@@ -87,44 +94,43 @@ static bool irqhandle(struct timer *timer, void *data) {
 					rgbPins = BIT(0) | BIT(1) | BIT(2);
 					break;
 			}
-#if 1
-		} else if (n <= 16000) {
-#elif 0
-		} else if (n <= 10000) {
-#else
-		} else if (n <= 100) {
-#endif
-			up = true;
 		}
 	}
 #ifndef CONFIG_TIMER_TEST_PWM
+	m = MAX_TIME - (n * MAX_TIME);
 # ifdef CONFIG_TIMER_TEST_ONESHOT
 	if (on) {
-		CONFIG_ASSERT(timer_oneshot(timer, n) == 0);
+		CONFIG_ASSERT(timer_oneshot(timer, m) == 0);
 	} else {
-		CONFIG_ASSERT(timer_oneshot(timer, MAX_TIME - n) == 0);
+		CONFIG_ASSERT(timer_oneshot(timer, MAX_TIME - m) == 0);
 	}
 # else
 	if (on) {
-		CONFIG_ASSERT(timer_periodic(timer, n) == 0);
+		CONFIG_ASSERT(timer_periodic(timer, m) == 0);
 	} else {
-		CONFIG_ASSERT(timer_periodic(timer, MAX_TIME - n) == 0);
+		CONFIG_ASSERT(timer_periodic(timer, MAX_TIME - m) == 0);
 	}
 # endif
 	on = !on;
 #else
+		tmp = n;
+		tmp *= 0.3;
+#ifdef CONFIG_ADC_TEST
+		tmp *= adc_val;
+#endif
+		m = MAX_TIME - (tmp * MAX_TIME);
 	if (rgbPins & BIT(0)) {
-		CONFIG_ASSERT(pwm_setDutyCycle(pwm[0], n) == 0);
+		CONFIG_ASSERT(pwm_setDutyCycle(pwm[0], m) == 0);
 	} else {
 		CONFIG_ASSERT(pwm_setDutyCycle(pwm[0], MAX_TIME) == 0);
 	}
 	if (rgbPins & BIT(1)) {
-		CONFIG_ASSERT(pwm_setDutyCycle(pwm[1], n) == 0);
+		CONFIG_ASSERT(pwm_setDutyCycle(pwm[1], m) == 0);
 	} else {
 		CONFIG_ASSERT(pwm_setDutyCycle(pwm[1], MAX_TIME) == 0);
 	}
 	if (rgbPins & BIT(2)) {
-		CONFIG_ASSERT(pwm_setDutyCycle(pwm[2], n) == 0);
+		CONFIG_ASSERT(pwm_setDutyCycle(pwm[2], m) == 0);
 	} else {
 		CONFIG_ASSERT(pwm_setDutyCycle(pwm[2], MAX_TIME) == 0);
 	}
@@ -147,7 +153,7 @@ int32_t timertest_init(struct gpio_pin **rgbPins) {
 #else
 	(void) rgbPins;
 #endif
-	timer = timer_init(FLEXTIMER0_ID, 128, MAX_TIME, 700);
+	timer = timer_init(FLEXTIMER0_ID, 128, MAX_TIME, 0);
 	CONFIG_ASSERT(timer != NULL);
 	ret = timer_setOverflowCallback(timer, &irqhandle, NULL);
 	CONFIG_ASSERT(ret == 0);

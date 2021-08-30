@@ -2,6 +2,7 @@
 **.o
 **.a
 .config*
+.gdbinit
 include/config
 include/generated
 test
