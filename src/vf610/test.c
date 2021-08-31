@@ -83,7 +83,7 @@ void vApplicationMallocFailedHook( void ) {
 }
 
 void vApplicationTickHook() {
-/*#ifndef CONFIG_UART_THREAD_SAVE
+/*#ifndef CONFIG_UART_THREAD_SAFE
 	static struct uart *uart;
 	uart = uart_init(1, 115200);
 	CONFIG_ASSERT(uart_puts(uart, "s\n", portMAX_DELAY) == 0);

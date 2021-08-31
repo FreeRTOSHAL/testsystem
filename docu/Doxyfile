@@ -2144,7 +2144,7 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             = CONFIG_EXAMPLE_THREAD_SAVE \
+PREDEFINED             = CONFIG_EXAMPLE_THREAD_SAFE \
                          CONFIG_EXAMPLE_MULTI \
                          LINKER_SCRIPT
 
