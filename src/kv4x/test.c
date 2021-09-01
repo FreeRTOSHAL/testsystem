@@ -45,15 +45,15 @@ int32_t initGPIO() {
 	if (gpio == NULL) {
 		return -1;
 	}
-	ledRGBPin[0] = gpioPin_init(gpio, PTA5, GPIO_OUTPUT, GPIO_PULL_UP);
+	ledRGBPin[0] = gpioPin_init(gpio, PTA4, GPIO_OUTPUT, GPIO_PULL_UP); // R
 	if (ledRGBPin[0] == NULL) {
 		return -1;
 	}
-	ledRGBPin[1] = gpioPin_init(gpio, PTA4, GPIO_OUTPUT, GPIO_PULL_UP);
+	ledRGBPin[1] = gpioPin_init(gpio, PTA5, GPIO_OUTPUT, GPIO_PULL_UP); // B
 	if (ledRGBPin[1] == NULL) {
 		return -1;
 	}
-	ledRGBPin[2] = gpioPin_init(gpio, PTA12, GPIO_OUTPUT, GPIO_PULL_UP);
+	ledRGBPin[2] = gpioPin_init(gpio, PTA12, GPIO_OUTPUT, GPIO_PULL_UP); // G
 	if (ledRGBPin[2] == NULL) {
 		return -1;
 	}
@@ -63,7 +63,7 @@ void ledTask(void *data) {
 	TickType_t waittime = 1000;
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
 	if (ledRGBPin[0]) {
-		gpioPin_clearPin(ledRGBPin[0]);
+		gpioPin_setPin(ledRGBPin[0]);
 		gpioPin_clearPin(ledRGBPin[1]);
 		gpioPin_clearPin(ledRGBPin[2]);
 	}
