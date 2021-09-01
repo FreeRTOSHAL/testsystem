@@ -10,6 +10,7 @@
 #include <task.h>
 #include <gpio.h>
 #include <devs.h>
+#include <iomux.h>
 #include <uart.h>
 #include <newlib_stub.h>
 #include <nlibc_stub.h>
@@ -35,6 +36,47 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName ) {
 
 void vApplicationIdleHook( void ) {
 }
+
+#if defined(CONFIG_GPIO) && defined(CONFIG_INCLUDE_xTaskDelayUntil)
+static struct gpio *gpio = NULL;
+static struct gpio_pin *ledRGBPin[3];
+int32_t initGPIO() {
+	gpio = gpio_init(GPIO_ID);
+	if (gpio == NULL) {
+		return -1;
+	}
+	ledRGBPin[0] = gpioPin_init(gpio, PTA5, GPIO_OUTPUT, GPIO_PULL_UP);
+	if (ledRGBPin[0] == NULL) {
+		return -1;
+	}
+	ledRGBPin[1] = gpioPin_init(gpio, PTA4, GPIO_OUTPUT, GPIO_PULL_UP);
+	if (ledRGBPin[1] == NULL) {
+		return -1;
+	}
+	ledRGBPin[2] = gpioPin_init(gpio, PTA12, GPIO_OUTPUT, GPIO_PULL_UP);
+	if (ledRGBPin[2] == NULL) {
+		return -1;
+	}
+	return 0;
+}
+void ledTask(void *data) {
+	TickType_t waittime = 1000;
+	TickType_t lastWakeUpTime = xTaskGetTickCount();
+	if (ledRGBPin[0]) {
+		gpioPin_clearPin(ledRGBPin[0]);
+		gpioPin_clearPin(ledRGBPin[1]);
+		gpioPin_clearPin(ledRGBPin[2]);
+	}
+	for(;;) {
+		if (ledRGBPin[0]) {
+			gpioPin_togglePin(ledRGBPin[0]);
+			gpioPin_togglePin(ledRGBPin[1]);
+			gpioPin_togglePin(ledRGBPin[2]);
+		}
+		xTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
+	}
+}
+#endif
 
 
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
@@ -80,6 +122,11 @@ int main() {
 	PRINTF("Init Devices\n");
 #ifdef CONFIG_INSTANCE_NAME
 	hal_printNames();
+#endif
+#if defined(CONFIG_GPIO) && defined(CONFIG_INCLUDE_xTaskDelayUntil)
+	ret = initGPIO();
+	CONFIG_ASSERT(ret == 0);
+	OS_CREATE_TASK(ledTask, "LED Task", 128, NULL, 1, taskLED);
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
