@@ -81,4 +81,7 @@ config LTC6811_TEST
 config CAN_TEST
 	bool "CAN Test"
 	depends on CAN
+	config FLEXCAN_ECHO_TEST
+		bool "Echo test"
+		default n
 endmenu

@@ -1,7 +1,7 @@
 menu "Application Config"
 config APP_INCLUDE
 	string
-#	default "-Iinclude/kv4x"
+	default "-Iinclude/kv4x"
 choice
 	prompt "stdout UART"
 	depends on UART
@@ -11,4 +11,11 @@ choice
 		bool "Semihosting UART"
 		depends on SEMIHOSTING_UART
 endchoice
+config CAN_TEST
+	bool "CAN Test"
+	depends on CAN
+	config FLEXCAN_ECHO_TEST
+		bool "Echo test"
+		depends on CAN_TEST
+		default n
 endmenu

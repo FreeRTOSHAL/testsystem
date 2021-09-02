@@ -16,6 +16,7 @@
 #include <nlibc_stub.h>
 #include <irq.h>
 #include <semihosting.h>
+#include <cantest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -130,6 +131,9 @@ int main() {
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
+#endif
+#ifdef CONFIG_CAN_TEST
+	can_test();
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();
