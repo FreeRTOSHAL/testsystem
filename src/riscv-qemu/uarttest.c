@@ -10,8 +10,8 @@ static void echoTask(void *data) {
 	for (;;) {
 		c = uart_getc(uart, portMAX_DELAY);
 		//c = uart_getcISR(uart);
-		if (c == '\n') {
-			ret = uart_putc(uart, '\r', portMAX_DELAY);
+		if (c == '\r') {
+			ret = uart_putc(uart, '\n', portMAX_DELAY);
 			CONFIG_ASSERT(ret >= 0);
 		}
 		ret = uart_putc(uart, c, portMAX_DELAY);
