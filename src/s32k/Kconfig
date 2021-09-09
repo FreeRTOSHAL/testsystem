@@ -45,7 +45,7 @@ config TIMER_TEST
 	bool "Flextimer Test"
 	depends on MACH_S32K_FLEXTIMER
 	choice
-		prompt "Timter Test"
+		prompt "Timer Test"
 		depends on TIMER_TEST
 		config TIMER_TEST_ONESHOT
 			depends on TIMER_TEST

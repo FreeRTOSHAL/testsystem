@@ -17,6 +17,7 @@
 #include <irq.h>
 #include <semihosting.h>
 #include <cantest.h>
+#include <timertest.h>
 #if defined(CONFIG_NEWLIB) || defined(CONFIG_NLIBC_PRINTF)
 # define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -60,6 +61,7 @@ int32_t initGPIO() {
 	}
 	return 0;
 }
+#ifndef CONFIG_TIMER_KV4X_TEST
 void ledTask(void *data) {
 	TickType_t waittime = 1000;
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
@@ -77,6 +79,7 @@ void ledTask(void *data) {
 		xTaskDelayUntil(&lastWakeUpTime, 1000 / portTICK_PERIOD_MS);
 	}
 }
+#endif
 #endif
 
 
@@ -127,13 +130,18 @@ int main() {
 #if defined(CONFIG_GPIO) && defined(CONFIG_INCLUDE_xTaskDelayUntil)
 	ret = initGPIO();
 	CONFIG_ASSERT(ret == 0);
+# ifndef CONFIG_TIMER_KV4X_TEST
 	OS_CREATE_TASK(ledTask, "LED Task", 128, NULL, 1, taskLED);
+# endif
 #endif
 #ifdef CONFIG_USE_STATS_FORMATTING_FUNCTIONS
 	OS_CREATE_TASK(taskManTask, "Task Manager Task", 512, NULL, 1, taskMan);
 #endif
 #ifdef CONFIG_CAN_TEST
 	can_test();
+#endif
+#ifdef CONFIG_TIMER_KV4X_TEST
+	timertest_init(ledRGBPin);
 #endif
 	PRINTF("Start Scheduler\n");
 	vTaskStartScheduler ();

@@ -18,4 +18,22 @@ config CAN_TEST
 		bool "Echo test"
 		depends on CAN_TEST
 		default n
+config TIMER_KV4X_TEST
+	bool "Flextimer Test"
+	depends on MACH_KV4X_FLEXTIMER
+	choice
+		prompt "Timer Test"
+		depends on TIMER_KV4X_TEST
+		config TIMER_TEST_KV4X_ONESHOT
+			bool "Use One Shot Mode"
+		config TIMER_TEST_KV4X_PERIODIC
+			bool "Use Periodic Mode"
+		config TIMER_TEST_KV4X_PWM
+			depends on PWM
+			bool "Use PWM"
+	endchoice
+	config CAPTURE_KV4X_TEST
+		depends on CAPTURE
+		depends on TIMER_KV4X_TEST
+		bool "Capture Test"
 endmenu
