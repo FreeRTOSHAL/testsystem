@@ -79,7 +79,6 @@ int32_t initGPIO() {
 }
 void ledTask(void *data) {
 	TickType_t lastWakeUpTime = xTaskGetTickCount();
-	CONFIG_ASSERT(0);
 	if (ledRGBPin[0]) {
 		gpioPin_setPin(ledRGBPin[0]);
 	}
