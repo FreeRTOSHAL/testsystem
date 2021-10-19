@@ -11,6 +11,20 @@ choice
 		bool "Semihosting UART"
 		depends on SEMIHOSTING_UART
 endchoice
+choice
+	prompt "Board"
+	config KV4X_WITHOUT_BOARD
+		bool "No Board"
+	config KV4X_UNI_BOARD
+		bool "Uni Board"
+	config KV4X_MC_BOARD
+		bool "Motorcontoller Board"
+endchoice
+config LED_TASK
+	depends on GPIO
+	depends on INCLUDE_xTaskDelayUntil
+	depends on !TIMER_KV4X_TEST
+	bool "LED Task"
 config CAN_TEST
 	bool "CAN Test"
 	depends on CAN

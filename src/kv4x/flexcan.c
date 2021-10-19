@@ -59,7 +59,6 @@ void can_task(void *data) {
 		.id = 0x123,
 		.mask = 0xFF0,
 	};
-	int i;
 	memset(&msg, 0xFF, sizeof(struct can_msg));
 	ret = can_up(can);
 	CONFIG_ASSERT(ret == 0);
@@ -68,8 +67,8 @@ void can_task(void *data) {
 	for (;;) {
 		ret = can_recv(can, filterID, &msg, portMAX_DELAY);
 		CONFIG_ASSERT(ret == 0);
-		printf("0x%x(%d): %0x%0x%0x%0x%0x%0x%0x%0x\n", msg.id, msg.length, msg.data[0], msg.data[1], msg.data[2], msg.data[3],  msg.data[4], msg.data[5], msg.data[6], msg.data[7]);
-		msg.id += 0x100;
+		//printf("0x%x(%d): %0x%0x%0x%0x%0x%0x%0x%0x\n", msg.id, msg.length, msg.data[0], msg.data[1], msg.data[2], msg.data[3],  msg.data[4], msg.data[5], msg.data[6], msg.data[7]);
+		msg.id -= 0x100;
 		ret = can_send(can, &msg, (1000 / portTICK_PERIOD_MS));
 		CONFIG_ASSERT(ret == 0);
 	}
@@ -77,7 +76,7 @@ void can_task(void *data) {
 #endif
 
 bool error_callback(struct can *can, can_error_t error, can_errorData_t data, void *userData) {
-	printf("CAN Error / Waring: error: %u data: %u\n", error, data);
+	printf("CAN Error / Waring: error: %lu data: %llu\n", error, data);
 	return false;
 }
 
